@@ -27,9 +27,9 @@
   }
 
   .wrap{
-    max-width:1120px;
-    margin:28px auto;
-    padding:0 18px;
+    width:min(1120px, 100vw);
+    margin:clamp(4px, 1.4vw, 18px) auto;
+    padding:0 clamp(6px, 1.2vw, 14px);
   }
 
   .card{
@@ -41,52 +41,39 @@
   }
 
   header{
-    padding:24px 28px;
-    border-bottom:1px solid #555;
+    padding:clamp(6px, .9vw, 10px) clamp(14px, 2.2vw, 24px) clamp(2px, .4vw, 4px);
+    border-bottom:0;
     background:#636363;
   }
 
   h1{
-    margin:0 0 6px;
-    font-size:28px;
+    margin:0;
+    font-size:clamp(19px, 2.4vw, 24px);
     letter-spacing:.2px;
     color:#fff;
   }
 
-  .sub{
-    margin:0;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.35;
-  }
 
   .main{
-    padding:24px 28px 28px;
+    padding:clamp(4px, .8vw, 8px) clamp(14px, 2.2vw, 24px) clamp(12px, 1.8vw, 20px);
   }
 
   .controls{
     display:flex;
-    gap:14px;
+    gap:clamp(7px, 1.1vw, 12px);
     align-items:flex-end;
     flex-wrap:wrap;
-    margin-bottom:18px;
+    margin-bottom:clamp(7px, 1.2vw, 12px);
   }
 
-  label{
-    display:block;
-    font-size:13px;
-    font-weight:700;
-    margin-bottom:7px;
-    color:#fff;
-  }
 
   input{
-    width:330px;
-    padding:12px 13px;
+    width:clamp(220px, 30vw, 320px);
+    padding:8px 12px;
     border:1px solid #cdd5df;
-    border-radius:11px;
-    font-size:23px;
-    letter-spacing:3px;
+    border-radius:10px;
+    font-size:clamp(17px, 2.2vw, 21px);
+    letter-spacing:clamp(1px, .3vw, 3px);
     font-weight:700;
     text-align:center;
     background:#fff;
@@ -104,13 +91,13 @@
 
   button{
     border:0;
-    border-radius:11px;
-    padding:12px 16px;
+    border-radius:10px;
+    padding:8px 13px;
     font-weight:700;
     cursor:pointer;
     background:var(--accent);
     color:white;
-    font-size:14px;
+    font-size:13px;
   }
 
   button.secondary{
@@ -119,10 +106,7 @@
   }
 
   .note{
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.35;
-    max-width:455px;
+    display:none;
   }
 
   .error{
@@ -136,26 +120,26 @@
   .summary{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:12px;
-    margin:14px 0 18px;
+    gap:8px;
+    margin:8px 0 10px;
   }
 
   .metric{
     background:var(--soft);
     border:1px solid #d8e6ff;
-    border-radius:14px;
-    padding:13px 14px;
+    border-radius:12px;
+    padding:8px 12px;
     color:var(--dark-text);
   }
 
   .metric .k{
-    font-size:12px;
+    font-size:11px;
     color:#4b5563;
-    margin-bottom:4px;
+    margin-bottom:2px;
   }
 
   .metric .v{
-    font-size:23px;
+    font-size:clamp(17px, 2.1vw, 21px);
     font-weight:800;
     letter-spacing:.8px;
     color:var(--dark-text);
@@ -172,37 +156,39 @@
     border-collapse:separate;
     border-spacing:0;
     width:auto;
-    font-size:14px;
+    font-size:clamp(10px, 1.25vw, 13px);
     border:2px solid #000;
-    border-radius:14px;
+    border-radius:12px;
     overflow:hidden;
     background:#fff;
     color:var(--dark-text);
   }
 
   th,td{
-    padding:7px 8px;
+    padding:3px 6px;
     text-align:center;
+    vertical-align:middle;
     border-bottom:1px solid #000;
   }
 
   th{
     background:#f1f4f8;
     color:#374151;
-    font-size:12px;
+    font-size:11px;
     text-transform:uppercase;
-    letter-spacing:.06em;
+    letter-spacing:.04em;
   }
 
-  th:nth-child(1),td:nth-child(1){width:74px}
-  th:nth-child(2),td:nth-child(2){width:150px}
+  th:nth-child(1),td:nth-child(1){width:clamp(54px, 7vw, 74px)}
+  th:nth-child(2),td:nth-child(2){width:clamp(96px, 14vw, 150px)}
 
   /* Heavy black border around the collator-bar column, matching the hand-drawn guide. */
   tbody td:nth-child(2){border-left:4px solid #000;border-right:4px solid #000}
+  tbody tr:not(.spacer-row) td:nth-child(2){display:flex;align-items:center;justify-content:center}
   tbody tr:first-child td:nth-child(2){border-top:4px solid #000}
   tbody tr:last-child td:nth-child(2){border-bottom:4px solid #000}
 
-  th:nth-child(3),td:nth-child(3){width:74px}
+  th:nth-child(3),td:nth-child(3){width:clamp(54px, 7vw, 74px)}
   th,td{border-right:1px solid #000}
   th:last-child,td:last-child{border-right:0}
   tr:last-child td{border-bottom:0}
@@ -214,8 +200,8 @@
 
   .chip{
     display:inline-block;
-    width:128px;
-    height:22px;
+    width:clamp(74px, 12vw, 128px);
+    height:clamp(12px, 1.6vw, 18px);
     border-radius:2px;
     background:transparent;
     color:transparent;
@@ -228,31 +214,54 @@
 
   /* Numbered rows stay the same height. True blank spacer rows create the visual break. */
   tr.spacer-row td{
-    height:18px;
+    height:8px;
     padding:0;
     background:var(--danger);
     border-bottom:0;
   }
 
   .small{
-    font-size:12px;
+    font-size:11px;
     color:var(--muted);
-    margin-top:12px;
-    line-height:1.35;
+    margin-top:7px;
+    line-height:1.22;
   }
 
   .printbar{
     display:flex;
     gap:10px;
-    margin-top:14px;
+    margin-top:8px;
     flex-wrap:wrap;
   }
 
   @media (max-width:880px){
-    .summary{grid-template-columns:1fr}
     input{width:100%}
     .controls{display:block}
-    .controls>*{margin-bottom:12px}
+    .controls>*{margin-bottom:10px}
+    .note{max-width:none}
+  }
+
+  @media (max-width:620px){
+    .summary{grid-template-columns:1fr}
+    table{width:100%}
+  }
+
+  @media (max-height:760px){
+    .wrap{margin:4px auto}
+    header{padding:5px 16px 2px}
+    .main{padding:4px 16px 9px}
+    h1{font-size:19px}
+    .small{font-size:10px;line-height:1.15;margin-top:5px}
+    input{padding:6px 10px;font-size:18px}
+    button{padding:6px 11px;font-size:12px}
+    .controls{margin-bottom:6px}
+    .summary{margin:6px 0 7px}
+    .metric{padding:6px 10px}
+    .metric .v{font-size:18px}
+    th,td{padding:2px 5px}
+    .chip{height:11px}
+    tr.spacer-row td{height:6px}
+    .printbar{margin-top:6px}
   }
 
   @media print{
@@ -268,13 +277,13 @@
 </head>
 <body>
 <div class="wrap"><div class="card">
-<header><h1>Collator Calculator</h1><p class="sub">Enter the full UPC. The calculator ignores the final check digit and uses the 5 digits immediately before it.</p></header>
+<header><h1>Collator Calculator</h1></header>
 <div class="main"><section>
 <div class="controls">
-  <div><label for="upc">Full UPC code</label><input id="upc" inputmode="numeric" maxlength="80" value="" placeholder="Paste UPC Here" aria-label="Full UPC code" autocomplete="off" autofocus /></div>
+  <div><input id="upc" inputmode="numeric" maxlength="80" value="" placeholder="Paste UPC Here" aria-label="Full UPC code" autocomplete="off" autofocus /></div>
   <button id="calc">Calculate</button>
   <button class="secondary" id="sample" type="button">Sample UPC</button>
-  <div class="note">For a full UPC like <b>023906918347</b>, the calculator uses <b>91834</b> and ignores the final check digit <b>7</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly.</div>
+
 </div>
 <p class="error" id="err">Enter either a 5-digit collator number or a full UPC with at least 6 digits.</p>
 <div class="summary">
@@ -283,7 +292,7 @@
 </div>
 <table aria-label="Collator values table"><thead><tr><th>Number</th><th>Collator bar</th><th>Position</th></tr></thead><tbody id="rows"></tbody></table>
 <div class="printbar"><button class="secondary" onclick="window.print()" type="button">Print</button></div>
-<p class="small">Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1. Bars that add up to the calculated value are ON; the rest are hidden.</p>
+<p class="small">For a full UPC like <b>023906918347</b>, the calculator uses <b>91834</b> and ignores the final check digit <b>7</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly. Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1.</p>
 </section></div></div></div>
 <script>
 const positionWeightsA=[512,256,128,64,32,16,8,4,2,1];
