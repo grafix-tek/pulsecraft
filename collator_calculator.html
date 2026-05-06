@@ -5,48 +5,265 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Collator Calculator</title>
 <style>
-  :root{--bg:#161c2d;--panel:#fff;--ink:#202428;--muted:#6b7280;--line:#000;--accent:#2563eb;--soft:#eef4ff;--danger:#b91c1c;}
+  :root{
+    --bg:#161c2d;
+    --panel:#636363;
+    --ink:#fff;
+    --muted:#fff;
+    --line:#000;
+    --accent:#2563eb;
+    --soft:#eef4ff;
+    --danger:#b91c1c;
+    --dark-text:#202428;
+  }
+
   *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
-  .wrap{max-width:1120px;margin:28px auto;padding:0 18px}
-  .card{background:var(--panel);border:1px solid #e3e7ec;border-radius:18px;box-shadow:0 10px 30px rgba(15,23,42,.08);overflow:hidden}
-  header{padding:24px 28px;border-bottom:1px solid #e8edf2;background:linear-gradient(180deg,#fff,#f9fbfd)}
-  h1{margin:0 0 6px;font-size:28px;letter-spacing:.2px}
-  .sub{margin:0;color:var(--muted);font-size:14px;line-height:1.35}
-  .main{padding:24px 28px 28px}
-  .controls{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
-  label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:#374151}
-  input{width:330px;padding:12px 13px;border:1px solid #cdd5df;border-radius:11px;font-size:23px;letter-spacing:3px;font-weight:700;text-align:center;background:#fff}
-  input:focus{outline:3px solid #dbeafe;border-color:#60a5fa}
-  button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer;background:var(--accent);color:white;font-size:14px}
-  button.secondary{background:#e8edf4;color:#1f2937}
-  .note{font-size:13px;color:var(--muted);line-height:1.35;max-width:455px}
-  .error{display:none;margin:0 0 14px;color:var(--danger);font-weight:700;font-size:13px}
-  .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 18px}
-  .metric{background:var(--soft);border:1px solid #d8e6ff;border-radius:14px;padding:13px 14px}
-  .metric .k{font-size:12px;color:#4b5563;margin-bottom:4px}.metric .v{font-size:23px;font-weight:800;letter-spacing:.8px}
-  .ignored{background:#ffec2f;padding:1px 5px;border-radius:5px}
-  table{border-collapse:separate;border-spacing:0;width:auto;font-size:14px;border:2px solid #000;border-radius:14px;overflow:hidden;background:#fff}
-  th,td{padding:7px 8px;text-align:center;border-bottom:1px solid #000}
-  th{background:#f1f4f8;color:#374151;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+
+  .wrap{
+    max-width:1120px;
+    margin:28px auto;
+    padding:0 18px;
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid #555;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+
+  header{
+    padding:24px 28px;
+    border-bottom:1px solid #555;
+    background:#636363;
+  }
+
+  h1{
+    margin:0 0 6px;
+    font-size:28px;
+    letter-spacing:.2px;
+    color:#fff;
+  }
+
+  .sub{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.35;
+  }
+
+  .main{
+    padding:24px 28px 28px;
+  }
+
+  .controls{
+    display:flex;
+    gap:14px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:7px;
+    color:#fff;
+  }
+
+  input{
+    width:330px;
+    padding:12px 13px;
+    border:1px solid #cdd5df;
+    border-radius:11px;
+    font-size:23px;
+    letter-spacing:3px;
+    font-weight:700;
+    text-align:center;
+    background:#fff;
+    color:var(--dark-text);
+  }
+
+  input::placeholder{
+    color:#6b7280;
+  }
+
+  input:focus{
+    outline:3px solid #dbeafe;
+    border-color:#60a5fa;
+  }
+
+  button{
+    border:0;
+    border-radius:11px;
+    padding:12px 16px;
+    font-weight:700;
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-size:14px;
+  }
+
+  button.secondary{
+    background:#e8edf4;
+    color:#1f2937;
+  }
+
+  .note{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.35;
+    max-width:455px;
+  }
+
+  .error{
+    display:none;
+    margin:0 0 14px;
+    color:#ffb4b4;
+    font-weight:700;
+    font-size:13px;
+  }
+
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin:14px 0 18px;
+  }
+
+  .metric{
+    background:var(--soft);
+    border:1px solid #d8e6ff;
+    border-radius:14px;
+    padding:13px 14px;
+    color:var(--dark-text);
+  }
+
+  .metric .k{
+    font-size:12px;
+    color:#4b5563;
+    margin-bottom:4px;
+  }
+
+  .metric .v{
+    font-size:23px;
+    font-weight:800;
+    letter-spacing:.8px;
+    color:var(--dark-text);
+  }
+
+  .ignored{
+    background:#ffec2f;
+    color:#111;
+    padding:1px 5px;
+    border-radius:5px;
+  }
+
+  table{
+    border-collapse:separate;
+    border-spacing:0;
+    width:auto;
+    font-size:14px;
+    border:2px solid #000;
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+    color:var(--dark-text);
+  }
+
+  th,td{
+    padding:7px 8px;
+    text-align:center;
+    border-bottom:1px solid #000;
+  }
+
+  th{
+    background:#f1f4f8;
+    color:#374151;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
   th:nth-child(1),td:nth-child(1){width:74px}
   th:nth-child(2),td:nth-child(2){width:150px}
+
   /* Heavy black border around the collator-bar column, matching the hand-drawn guide. */
   tbody td:nth-child(2){border-left:4px solid #000;border-right:4px solid #000}
   tbody tr:first-child td:nth-child(2){border-top:4px solid #000}
   tbody tr:last-child td:nth-child(2){border-bottom:4px solid #000}
+
   th:nth-child(3),td:nth-child(3){width:74px}
   th,td{border-right:1px solid #000}
   th:last-child,td:last-child{border-right:0}
   tr:last-child td{border-bottom:0}
-  .on{font-weight:800;background:#fff}
-  .chip{display:inline-block;width:128px;height:22px;border-radius:2px;background:transparent;color:transparent}
-  .on .chip{background:#111827;color:transparent}
+
+  .on{
+    font-weight:800;
+    background:#fff;
+  }
+
+  .chip{
+    display:inline-block;
+    width:128px;
+    height:22px;
+    border-radius:2px;
+    background:transparent;
+    color:transparent;
+  }
+
+  .on .chip{
+    background:#111827;
+    color:transparent;
+  }
+
   /* Numbered rows stay the same height. True blank spacer rows create the visual break. */
-  tr.spacer-row td{height:18px;padding:0;background:var(--danger);border-bottom:0}
-  .small{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.35}.printbar{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-  @media (max-width:880px){.summary{grid-template-columns:1fr}input{width:100%}.controls{display:block}.controls>*{margin-bottom:12px}}
-  @media print{body{background:#fff}.wrap{margin:0;max-width:none}.card{box-shadow:none;border:0}.main{padding:18px}button{display:none}}
+  tr.spacer-row td{
+    height:18px;
+    padding:0;
+    background:var(--danger);
+    border-bottom:0;
+  }
+
+  .small{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:12px;
+    line-height:1.35;
+  }
+
+  .printbar{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+
+  @media (max-width:880px){
+    .summary{grid-template-columns:1fr}
+    input{width:100%}
+    .controls{display:block}
+    .controls>*{margin-bottom:12px}
+  }
+
+  @media print{
+    body{background:#fff;color:#000}
+    .wrap{margin:0;max-width:none}
+    .card{box-shadow:none;border:0;background:#fff;color:#000}
+    header{background:#fff;color:#000;border-bottom:1px solid #000}
+    h1,.sub,label,.note,.small{color:#000}
+    .main{padding:18px}
+    button{display:none}
+  }
 </style>
 </head>
 <body>
