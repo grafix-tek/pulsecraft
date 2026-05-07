@@ -10,10 +10,9 @@
     --panel:#636363;
     --ink:#fff;
     --muted:#fff;
-    --line:#000;
     --accent:#2563eb;
     --soft:#eef4ff;
-    --danger:#b91c1c;
+    --danger:#d11d1d;
     --dark-text:#202428;
   }
 
@@ -24,10 +23,11 @@
     font-family:Arial,Helvetica,sans-serif;
     background:var(--bg);
     color:var(--ink);
+    padding-bottom:34px;
   }
 
   .wrap{
-    width:min(1120px, 100vw);
+    width:min(1000px, 100vw);
     margin:clamp(4px, 1.4vw, 18px) auto;
     padding:0 clamp(6px, 1.2vw, 14px);
   }
@@ -42,7 +42,6 @@
 
   header{
     padding:clamp(6px, .9vw, 10px) clamp(14px, 2.2vw, 24px) clamp(2px, .4vw, 4px);
-    border-bottom:0;
     background:#636363;
   }
 
@@ -52,7 +51,6 @@
     letter-spacing:.2px;
     color:#fff;
   }
-
 
   .main{
     padding:clamp(4px, .8vw, 8px) clamp(14px, 2.2vw, 24px) clamp(12px, 1.8vw, 20px);
@@ -65,7 +63,6 @@
     flex-wrap:wrap;
     margin-bottom:clamp(7px, 1.2vw, 12px);
   }
-
 
   input{
     width:clamp(220px, 30vw, 320px);
@@ -80,9 +77,7 @@
     color:var(--dark-text);
   }
 
-  input::placeholder{
-    color:#6b7280;
-  }
+  input::placeholder{ color:#6b7280; }
 
   input:focus{
     outline:3px solid #dbeafe;
@@ -103,10 +98,6 @@
   button.secondary{
     background:#e8edf4;
     color:#1f2937;
-  }
-
-  .note{
-    display:none;
   }
 
   .error{
@@ -152,6 +143,38 @@
     border-radius:5px;
   }
 
+  .visuals-grid{
+    display:flex;
+    gap:clamp(16px, 2.5vw, 40px);
+    align-items:center;
+    margin-top:8px;
+  }
+
+  .vertical-section{
+    flex:0 0 auto;
+  }
+
+  .rotated-section{
+    flex:1 1 auto;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    min-width:0;
+    overflow:auto;
+  }
+
+  .rotated-stage{
+    position:relative;
+    overflow:visible;
+  }
+
+  .rotated-table-wrap{
+    position:absolute;
+    left:0;
+    transform-origin:top left;
+    transform:rotate(-90deg);
+  }
+
   table{
     border-collapse:separate;
     border-spacing:0;
@@ -181,22 +204,17 @@
 
   th:nth-child(1),td:nth-child(1){width:clamp(54px, 7vw, 74px)}
   th:nth-child(2),td:nth-child(2){width:clamp(96px, 14vw, 150px)}
+  th:nth-child(3),td:nth-child(3){width:clamp(54px, 7vw, 74px)}
 
-  /* Heavy black border around the collator-bar column, matching the hand-drawn guide. */
   tbody td:nth-child(2){border-left:4px solid #000;border-right:4px solid #000}
   tbody tr:not(.spacer-row) td:nth-child(2){display:flex;align-items:center;justify-content:center}
   tbody tr:first-child td:nth-child(2){border-top:4px solid #000}
   tbody tr:last-child td:nth-child(2){border-bottom:4px solid #000}
-
-  th:nth-child(3),td:nth-child(3){width:clamp(54px, 7vw, 74px)}
   th,td{border-right:1px solid #000}
   th:last-child,td:last-child{border-right:0}
   tr:last-child td{border-bottom:0}
 
-  .on{
-    font-weight:800;
-    background:#fff;
-  }
+  .on{ font-weight:800; background:#fff; }
 
   .chip{
     display:inline-block;
@@ -207,24 +225,13 @@
     color:transparent;
   }
 
-  .on .chip{
-    background:#111827;
-    color:transparent;
-  }
+  .on .chip{ background:#111827; }
 
-  /* Numbered rows stay the same height. True blank spacer rows create the visual break. */
   tr.spacer-row td{
     height:8px;
     padding:0;
     background:var(--danger);
     border-bottom:0;
-  }
-
-  .small{
-    font-size:11px;
-    color:var(--muted);
-    margin-top:7px;
-    line-height:1.22;
   }
 
   .printbar{
@@ -234,16 +241,88 @@
     flex-wrap:wrap;
   }
 
+  .small{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:7px;
+    line-height:1.22;
+  }
+
+  .home-row {
+    margin-top:8px;
+    margin-bottom:34px;
+    width:100%;
+  }
+
+  .home-button {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-width:34px;
+    height:34px;
+    padding:0 10px;
+    border-radius:8px;
+    background:#222d44;
+    color:#fff;
+    border:1px solid #444f67;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:bold;
+    opacity:0.75;
+  }
+
+  .home-button:hover { opacity:1; }
+
+  .footer {
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    background-color:#222d44;
+    z-index:1000;
+  }
+
+  .footer-container {
+    max-width:90%;
+    margin:0 auto;
+    text-align:center;
+    color:#fff;
+    opacity:.5;
+    font-size:.7em;
+    padding:5px 0 5px 0;
+    letter-spacing:0em;
+  }
+
+  @media (max-width:1020px){
+    .visuals-grid{
+      display:block;
+    }
+
+    .vertical-section{
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
+
+    .rotated-section{
+      display:none;
+    }
+  }
+
   @media (max-width:880px){
     input{width:100%}
     .controls{display:block}
     .controls>*{margin-bottom:10px}
-    .note{max-width:none}
   }
 
   @media (max-width:620px){
     .summary{grid-template-columns:1fr}
-    table{width:100%}
+
+    /* Keep the main vertical table from stretching/distorting on phone */
+    table{width:auto}
+
+    .footer-container{text-align:center}
   }
 
   @media (max-height:760px){
@@ -269,95 +348,173 @@
     .wrap{margin:0;max-width:none}
     .card{box-shadow:none;border:0;background:#fff;color:#000}
     header{background:#fff;color:#000;border-bottom:1px solid #000}
-    h1,.sub,label,.note,.small{color:#000}
+    h1,.small{color:#000}
     .main{padding:18px}
-    button{display:none}
+    button,.home-row,.footer{display:none}
   }
 </style>
 </head>
 <body>
-<div class="wrap"><div class="card">
-<header><h1>Collator Calculator</h1></header>
-<div class="main"><section>
-<div class="controls">
-  <div><input id="upc" inputmode="numeric" maxlength="80" value="" placeholder="Paste UPC Here" aria-label="Full UPC code" autocomplete="off" autofocus /></div>
-  <button id="calc">Calculate</button>
-  <button class="secondary" id="sample" type="button">Sample UPC</button>
+<div class="wrap">
+  <div class="card">
+    <header><h1>Collator Calculator</h1></header>
+    <div class="main">
+      <section>
+        <div class="controls">
+          <div><input id="upc" inputmode="numeric" maxlength="80" value="" placeholder="Paste UPC Here" aria-label="Full UPC code" autocomplete="off" autofocus /></div>
+          <button id="calc">Calculate</button>
+          <button class="secondary" id="sample" type="button">Sample UPC</button>
+        </div>
 
+        <p class="error" id="err">Enter either a 5-digit collator number or a full UPC with at least 6 digits.</p>
+
+        <div class="summary">
+          <div class="metric"><div class="k">Digits used</div><div class="v" id="digitsUsed">—</div></div>
+          <div class="metric"><div class="k">Ignored check digit</div><div class="v ignored" id="checkDigit">—</div></div>
+        </div>
+
+        <div class="visuals-grid">
+          <div class="vertical-section">
+            <table id="verticalTable" aria-label="Collator values table">
+              <thead>
+                <tr><th>Number</th><th>Collator bar</th><th>Position</th></tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+
+          <div class="rotated-section" aria-label="Rotated collator values">
+            <div class="rotated-stage" id="rotatedStage">
+              <div class="rotated-table-wrap" id="rotatedTableWrap">
+                <table id="rotatedTable" aria-label="Rotated collator values table">
+                  <thead>
+                    <tr><th>Number</th><th>Collator bar</th><th>Position</th></tr>
+                  </thead>
+                  <tbody id="rowsRotated"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="printbar"><button class="secondary" onclick="window.print()" type="button">Print</button></div>
+        <p class="small">For a full UPC like <b>023906918347</b>, the calculator uses <b>91834</b> and ignores the final check digit <b>7</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly. Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="home-row">
+    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">⌂ Home</a>
+  </div>
 </div>
-<p class="error" id="err">Enter either a 5-digit collator number or a full UPC with at least 6 digits.</p>
-<div class="summary">
-  <div class="metric"><div class="k">Digits used</div><div class="v" id="digitsUsed">—</div></div>
-  <div class="metric"><div class="k">Ignored check digit</div><div class="v ignored" id="checkDigit">—</div></div>
-</div>
-<table aria-label="Collator values table"><thead><tr><th>Number</th><th>Collator bar</th><th>Position</th></tr></thead><tbody id="rows"></tbody></table>
-<div class="printbar"><button class="secondary" onclick="window.print()" type="button">Print</button></div>
-<p class="small">For a full UPC like <b>023906918347</b>, the calculator uses <b>91834</b> and ignores the final check digit <b>7</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly. Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1.</p>
-</section></div></div></div>
+
 <script>
 const positionWeightsA=[512,256,128,64,32,16,8,4,2,1];
 const positionWeightsB=[64,32,16,8,4,2,1];
-function decompose(n, weights){let rem=n;return weights.map(w=>{const on=rem>=w;if(on) rem-=w;return {number:w,on,remaining:rem};});}
+
+function decompose(n, weights){
+  let rem=n;
+  return weights.map(w=>{
+    const on=rem>=w;
+    if(on) rem-=w;
+    return {number:w,on,remaining:rem};
+  });
+}
+
 function extractUPC(raw){
   raw = raw || '';
-  // Forgiving paste: accepts plain UPCs, hyphenated UPCs, spaced UPCs, or UPCs inside surrounding text.
-  // It finds the last UPC-like digit run with at least 6 digits, then removes separators.
   const matches = raw.match(/(?:\d[\s-]*){6,}/g);
   if(matches && matches.length){
     return matches[matches.length-1].replace(/\D/g,'').slice(0,30);
   }
   return raw.replace(/\D/g,'').slice(0,30);
 }
-function getCollatorDigits(s){if(s.length===5) return {used:s,check:'—'};return {used:s.slice(-6,-1),check:s.slice(-1)};}
-function calculate(){
-  const input=document.getElementById('upc');input.value=extractUPC(input.value);
-  const valid=/^\d{5}$/.test(input.value)||/^\d{6,}$/.test(input.value);
-  document.getElementById('err').style.display=valid?'none':'block';
-  if(!valid){document.getElementById('digitsUsed').textContent='—';document.getElementById('checkDigit').textContent='—';renderTable([...positionWeightsA,...positionWeightsB].map(w=>({number:w,on:false,remaining:0})));return;}
-  const picked=getCollatorDigits(input.value);const used=picked.used;
-  const groupA=decompose(parseInt(used.slice(0,3),10),positionWeightsA);
-  const groupB=decompose(parseInt(used.slice(3,5),10),positionWeightsB);
-  document.getElementById('digitsUsed').textContent=used;document.getElementById('checkDigit').textContent=picked.check;
-  renderTable([...groupA,...groupB]);
+
+function getCollatorDigits(s){
+  if(s.length===5) return {used:s,check:'—'};
+  return {used:s.slice(-6,-1),check:s.slice(-1)};
 }
-function makeSpacerRow(className){
-  const tr=document.createElement('tr');
-  tr.className=className;
-  tr.setAttribute('aria-hidden','true');
-  tr.innerHTML='<td></td><td></td><td></td>';
-  return tr;
-}
-function renderTable(bits){
-  const tbody=document.getElementById('rows');tbody.innerHTML='';
+
+function buildTableRows(bits){
+  let html='';
   bits.forEach((bit,i)=>{
     if(i===10){
-      tbody.appendChild(makeSpacerRow('spacer-row'));
-      tbody.appendChild(makeSpacerRow('spacer-row'));
+      html += '<tr class="spacer-row" aria-hidden="true"><td></td><td></td><td></td></tr>';
+      html += '<tr class="spacer-row" aria-hidden="true"><td></td><td></td><td></td></tr>';
     }
-    const tr=document.createElement('tr');
-    const classes=[];
-    if(bit.on) classes.push('on');
-    tr.className=classes.join(' ');
-    tr.innerHTML=`<td>${bit.number}</td><td><span class="chip" aria-label="${bit.on?'on':'off'}"></span></td><td>${i+1}</td>`;
-    tbody.appendChild(tr);
+    html += `<tr class="${bit.on?'on':''}"><td>${bit.number}</td><td><span class="chip" aria-label="${bit.on?'on':'off'}"></span></td><td>${i+1}</td></tr>`;
   });
+  return html;
 }
+
+function syncRotatedSizing(){
+  const verticalTable = document.getElementById('verticalTable');
+  const stage = document.getElementById('rotatedStage');
+  const wrap = document.getElementById('rotatedTableWrap');
+  if(!verticalTable || !stage || !wrap) return;
+  const rect = verticalTable.getBoundingClientRect();
+  stage.style.width = `${Math.ceil(rect.height)}px`;
+  stage.style.height = `${Math.ceil(rect.width)}px`;
+  wrap.style.top = `${Math.ceil(rect.width)}px`;
+}
+
+function renderTable(bits){
+  const markup = buildTableRows(bits);
+  document.getElementById('rows').innerHTML = markup;
+  document.getElementById('rowsRotated').innerHTML = markup;
+  requestAnimationFrame(syncRotatedSizing);
+}
+
+function calculate(){
+  const input=document.getElementById('upc');
+  input.value=extractUPC(input.value);
+  const valid=/^\d{5}$/.test(input.value)||/^\d{6,}$/.test(input.value);
+  document.getElementById('err').style.display=valid?'none':'block';
+  if(!valid){
+    document.getElementById('digitsUsed').textContent='—';
+    document.getElementById('checkDigit').textContent='—';
+    renderTable([...positionWeightsA,...positionWeightsB].map(w=>({number:w,on:false,remaining:0})));
+    return;
+  }
+  const picked=getCollatorDigits(input.value);
+  const used=picked.used;
+  const groupA=decompose(parseInt(used.slice(0,3),10),positionWeightsA);
+  const groupB=decompose(parseInt(used.slice(3,5),10),positionWeightsB);
+  document.getElementById('digitsUsed').textContent=used;
+  document.getElementById('checkDigit').textContent=picked.check;
+  renderTable([...groupA,...groupB]);
+}
+
 function focusUPC(selectExisting=true){
   const upc=document.getElementById('upc');
   upc.focus();
   if(selectExisting && upc.value) upc.select();
 }
+
 document.getElementById('upc').addEventListener('input',calculate);
 document.getElementById('upc').addEventListener('focus',()=>focusUPC(true));
 document.getElementById('upc').addEventListener('click',()=>focusUPC(true));
 document.getElementById('calc').addEventListener('click',()=>{calculate();focusUPC(true);});
 document.getElementById('sample').addEventListener('click',()=>{document.getElementById('upc').value='023906918347';calculate();focusUPC(true);});
 document.addEventListener('click',(event)=>{
-  if(event.target.closest('button')) return;
+  if(event.target.closest('button, a')) return;
   focusUPC(true);
 });
+window.addEventListener('resize', syncRotatedSizing);
+
 renderTable([...positionWeightsA,...positionWeightsB].map(w=>({number:w,on:false,remaining:0})));
-window.addEventListener('load',()=>{const upc=document.getElementById('upc');upc.value='';focusUPC(false);});
+window.addEventListener('load',()=>{
+  const upc=document.getElementById('upc');
+  upc.value='';
+  focusUPC(false);
+  syncRotatedSizing();
+});
 </script>
+
+<footer class="footer">
+  <div class="footer-container">
+    Web version by PulseCraft, adapted from an existing Excel-based collator calculator. Original concept/design credited to its original creator. Provided as-is for convenience only. Verify before production use. No warranty is expressed or implied. Not responsible or liable for errors, data loss, production issues, or damages of any kind. Ver 2.0.0.2026
+  </div>
+</footer>
 </body>
 </html>
