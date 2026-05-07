@@ -3,43 +3,287 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PulseCraft</title>
+  <title>PulseCraft Utilities</title>
 
   <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    :root {
+      --bg: #161c2d;
+      --fg: #f4f6fa;
+      --panel: #222d44;
+      --panel-alt: #252a3d;
+      --border: #444f67;
+      --muted: rgba(244, 246, 250, 0.72);
+      --shadow: rgba(0, 0, 0, 0.28);
+      --tc: #1976d2;
+      --cc: #b88a36;
     }
 
-    .container {
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: sans-serif;
+      margin: 20px auto;
+      max-width: 90%;
+      min-height: 100vh;
+      padding-bottom: 34px;
+    }
+
+    header {
       text-align: center;
-      padding: 32px;
+      margin: 0 0 22px;
     }
 
     h1 {
-      margin: 0 0 12px;
-      font-size: 36px;
-      font-weight: 700;
+      margin: 0;
+      font-size: 1.65em;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--fg);
     }
 
-    p {
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 8px 0 40px;
+    }
+
+    .utility-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .tool-card {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--fg);
+      box-shadow: 0 6px 16px var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px var(--shadow);
+      border-color: #607895;
+    }
+
+    .preview {
+      height: 230px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .preview iframe {
+      width: 138.9%;
+      height: 138.9%;
+      border: 0;
+      pointer-events: none;
+      transform: scale(0.72);
+      transform-origin: top left;
+    }
+
+    .tool-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--panel-alt);
+    }
+
+    .app-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .tc {
+      background: var(--tc);
+    }
+
+    .cc {
+      background: var(--cc);
+    }
+
+    .tool-title {
       margin: 0;
-      font-size: 18px;
-      color: #666;
+      font-size: 1.15em;
+      font-weight: 800;
+      color: var(--fg);
+    }
+
+    .tool-desc {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.9em;
+      line-height: 1.35;
+    }
+
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background-color: #222d44;
+      z-index: 1000;
+    }
+
+    .footer-container {
+      max-width: 90%;
+      margin: 0 auto;
+      text-align: right;
+      color: #fff;
+      opacity: .5;
+      font-size: .7em;
+      padding: 5px 0 5px 0;
+      letter-spacing: 0em;
+    }
+
+    /* 
+      Icon-only layout.
+      This kicks in earlier so tablet/small browser widths
+      do not keep showing cramped preview windows.
+    */
+    @media (max-width: 900px) {
+      body {
+        margin: 20px auto;
+        max-width: 92%;
+      }
+
+      header {
+        margin-bottom: 26px;
+      }
+
+      h1 {
+        font-size: 1.45em;
+      }
+
+      main {
+        padding-top: 0;
+      }
+
+      .utility-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 22px 16px;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+
+      .tool-card {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        text-align: center;
+      }
+
+      .tool-card:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: transparent;
+      }
+
+      .preview {
+        display: none;
+      }
+
+      .tool-info {
+        display: block;
+        padding: 0;
+        background: transparent;
+      }
+
+      .app-icon {
+        width: 74px;
+        height: 74px;
+        border-radius: 19px;
+        margin: 0 auto 9px;
+        font-size: 24px;
+      }
+
+      .tool-title {
+        font-size: 0.9em;
+        line-height: 1.2;
+      }
+
+      .tool-desc {
+        display: none;
+      }
+
+      .footer-container {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .utility-grid {
+        grid-template-columns: 1fr;
+        max-width: 220px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>PulseCraft</h1>
-    <p>Page coming soon.</p>
-  </div>
+  <header>
+    <h1>PulseCraft Utilities</h1>
+  </header>
+
+  <main>
+    <div class="utility-grid">
+
+      <a class="tool-card" href="text_compare.html">
+        <div class="preview">
+          <iframe src="text_compare.html" title="Text Compare preview"></iframe>
+        </div>
+        <div class="tool-info">
+          <div class="app-icon tc">TC</div>
+          <div>
+            <h2 class="tool-title">Text Compare</h2>
+            <p class="tool-desc">Compare two blocks of text and review differences quickly.</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="tool-card" href="collator_calculator.html">
+        <div class="preview">
+          <iframe src="collator_calculator.html" title="Collator Calculator preview"></iframe>
+        </div>
+        <div class="tool-info">
+          <div class="app-icon cc">CC</div>
+          <div>
+            <h2 class="tool-title">Collator Calculator</h2>
+            <p class="tool-desc">Calculate and visualize collator numbers from UPC input.</p>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      Copyright &copy; 2025, 2026 PulseCraft
+    </div>
+  </footer>
 </body>
 </html>
