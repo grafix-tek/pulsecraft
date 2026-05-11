@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDF Geometry Updater</title>
+  <style>
+    :root {
+      --bg: #161c2d;
+      --fg: #f4f6fa;
+      --panel: #222d44;
+      --panel-alt: #252a3d;
+      --border: #444f67;
+      --muted: rgba(244, 246, 250, 0.72);
+      --shadow: rgba(0, 0, 0, 0.28);
+      --accent: #607895;
+      --success: #8ee88e;
+      --danger: #ff8c8c;
+      --warning: #ffd166;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 20px auto;
+      max-width: 90%;
+      min-height: 100vh;
+      padding-bottom: 46px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 0 40px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.65em;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--fg);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    code {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--fg);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .box {
+      margin-top: 16px;
+      background: var(--panel);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .box.drag {
+      border-color: var(--accent);
+      background: #263650;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 640px;
+      margin: 16px auto 0;
+      text-align: left;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--fg);
+      padding: 0 10px;
+      font-size: 14px;
+    }
+
+    .field input:focus {
+      outline: 2px solid rgba(96, 120, 149, 0.7);
+      outline-offset: 1px;
+    }
+
+    label {
+      user-select: none;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+
+    .log {
+      margin-top: 14px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      background: #111827;
+      color: var(--success);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      min-height: 64px;
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .home-row {
+      margin-top: 8px;
+      margin-bottom: 34px;
+      width: 100%;
+    }
+
+    .home-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: #222d44;
+      color: #fff;
+      border: 1px solid #444f67;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      opacity: 0.75;
+    }
+
+    .home-button:hover {
+      opacity: 1;
+    }
+
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background-color: #222d44;
+      z-index: 1000;
+    }
+
+    .footer-container {
+      max-width: 90%;
+      margin: 0 auto;
+      text-align: center;
+      color: #fff;
+      opacity: .5;
+      font-size: .7em;
+      padding: 5px 0 5px 0;
+      letter-spacing: 0em;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        max-width: 92%;
+      }
+
+      h1 {
+        font-size: 1.45em;
+      }
+
+      .inset-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 380px) {
+      .inset-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script src="js/pdf-lib.min.js"></script>
+</head>
+
+<body>
+  <main>
+    <h1>PDF Geometry Updater — TrimBox Setter</h1>
+    <div class="small">
+      This tool does <b>not</b> visually crop. It leaves <code>MediaBox</code> alone and only sets <code>TrimBox</code>.
+      All processing happens locally in your browser.
+    </div>
+
+    <div id="drop" class="box">
+      <div><b>Drag &amp; drop PDFs here</b></div>
+
+      <div class="inset-grid" aria-label="Trim removal in inches">
+        <div class="field">
+          <label for="topInset">Top inches</label>
+          <input id="topInset" type="number" value="4" step="0.0001" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="bottomInset">Bottom inches</label>
+          <input id="bottomInset" type="number" value="4" step="0.0001" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="leftInset">Left inches</label>
+          <input id="leftInset" type="number" value="4" step="0.0001" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="rightInset">Right inches</label>
+          <input id="rightInset" type="number" value="4" step="0.0001" inputmode="decimal" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label>
+          <input id="clearCrop" type="checkbox" />
+          Optional: clear CropBox if present (prevents pre-existing “visual crop”)
+        </label>
+      </div>
+
+      <div class="small" style="margin-top:10px;">
+        Auto-process + auto-download. No button.
+      </div>
+    </div>
+
+    <div id="log" class="log" aria-live="polite"></div>
+
+    <div class="home-row">
+      <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">⌂ Home</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      Copyright &copy; 2025, 2026 PulseCraft • Free for personal and commercial use. All rights reserved. No warranty is expressed or implied. Use at your own risk. Not responsible or liable for any errors, data loss, or damages of any kind.<br>Ver 3.0.0.2026
+    </div>
+  </footer>
+
+<script>
+(() => {
+  const drop = document.getElementById('drop');
+  const logEl = document.getElementById('log');
+  const clearCrop = document.getElementById('clearCrop');
+  const topInset = document.getElementById('topInset');
+  const bottomInset = document.getElementById('bottomInset');
+  const leftInset = document.getElementById('leftInset');
+  const rightInset = document.getElementById('rightInset');
+
+  const PTS_PER_INCH = 72;
+
+  let isRunning = false;
+
+  function log(msg) {
+    logEl.textContent += msg + "\n";
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function readInches(input) {
+    const value = parseFloat(input.value);
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function roundTo4(value) {
+    return Number(parseFloat(value).toFixed(4));
+  }
+
+  function fmt(value) {
+    return roundTo4(value).toString();
+  }
+
+  function getInsetValues() {
+    const inches = {
+      top: readInches(topInset),
+      bottom: readInches(bottomInset),
+      left: readInches(leftInset),
+      right: readInches(rightInset)
+    };
+
+    return {
+      inches,
+      points: {
+        top: roundTo4(inches.top * PTS_PER_INCH),
+        bottom: roundTo4(inches.bottom * PTS_PER_INCH),
+        left: roundTo4(inches.left * PTS_PER_INCH),
+        right: roundTo4(inches.right * PTS_PER_INCH)
+      }
+    };
+  }
+
+  function makeBoxArray(ctx, [llx, lly, urx, ury]) {
+    const { PDFArray, PDFNumber } = PDFLib;
+    const arr = PDFArray.withContext(ctx);
+    arr.push(PDFNumber.of(llx));
+    arr.push(PDFNumber.of(lly));
+    arr.push(PDFNumber.of(urx));
+    arr.push(PDFNumber.of(ury));
+    return arr;
+  }
+
+  function getBox(page, boxName) {
+    const { PDFName } = PDFLib;
+    const key = PDFName.of(boxName);
+    const node = page.node;
+    const box = node.get(key);
+    if (!box) return null;
+
+    const nums = [];
+    for (let i = 0; i < 4; i++) nums.push(box.get(i).asNumber());
+    return nums; // [llx,lly,urx,ury]
+  }
+
+  async function processOne(file, insetValues) {
+    const { PDFDocument, PDFName } = PDFLib;
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const pdfDoc = await PDFDocument.load(bytes, { ignoreEncryption: false });
+    const ctx = pdfDoc.context;
+
+    const pages = pdfDoc.getPages();
+    let changedPages = 0;
+    let firstTrimBox = null;
+
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
+
+      // Use MediaBox; fallback to CropBox if MediaBox absent (rare).
+      const media = getBox(page, 'MediaBox') || getBox(page, 'CropBox');
+      if (!media) throw new Error(`Page ${i+1}: cannot find MediaBox/CropBox.`);
+
+      const [llx, lly, urx, ury] = media;
+      const newBox = [
+        roundTo4(llx + insetValues.points.left),
+        roundTo4(lly + insetValues.points.bottom),
+        roundTo4(urx - insetValues.points.right),
+        roundTo4(ury - insetValues.points.top)
+      ];
+
+      const newW = roundTo4(newBox[2] - newBox[0]);
+      const newH = roundTo4(newBox[3] - newBox[1]);
+      if (newW <= 0 || newH <= 0) {
+        throw new Error(`Page ${i+1}: inset too large for page size (TrimBox invalid).`);
+      }
+
+      // Set TrimBox only
+      page.node.set(PDFName.of('TrimBox'), makeBoxArray(ctx, newBox));
+      changedPages++;
+      if (!firstTrimBox) firstTrimBox = newBox;
+
+      // Optional: remove CropBox (only if you check the box)
+      if (clearCrop.checked) page.node.delete(PDFName.of('CropBox'));
+    }
+
+    const outBytes = await pdfDoc.save();
+    const outBlob = new Blob([outBytes], { type: 'application/pdf' });
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(outBlob);
+
+    // IMPORTANT: keep original filename (no suffix)
+    a.download = file.name;
+
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    log(`✅ ${file.name}: set TrimBox on ${changedPages} page(s).`);
+    if (firstTrimBox) log(`   Page 1 TrimBox: [${firstTrimBox.map(fmt).join(', ')}] pts`);
+  }
+
+  async function run(files) {
+    if (isRunning) {
+      log("⚠️ Busy processing — try again in a moment.");
+      return;
+    }
+    isRunning = true;
+
+    const insetValues = getInsetValues();
+
+    logEl.textContent = "";
+    log(`Insets in inches: top ${fmt(insetValues.inches.top)}, bottom ${fmt(insetValues.inches.bottom)}, left ${fmt(insetValues.inches.left)}, right ${fmt(insetValues.inches.right)}.`);
+    log(`Insets in points: top ${fmt(insetValues.points.top)}, bottom ${fmt(insetValues.points.bottom)}, left ${fmt(insetValues.points.left)}, right ${fmt(insetValues.points.right)}.`);
+    log(`Mode: Set TrimBox only. MediaBox unchanged.${clearCrop.checked ? " CropBox cleared." : ""}`);
+    log("----");
+
+    for (const f of files) {
+      try {
+        await processOne(f, insetValues);
+      } catch (e) {
+        log(`❌ ${f.name}: ${e.message || e}`);
+      }
+    }
+
+    log("Done. Drop more PDFs anytime.");
+    isRunning = false;
+  }
+
+  // Drag/drop handling (auto-run)
+  drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('drag');
+
+    const files = [...e.dataTransfer.files]
+      .filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+
+    if (!window.PDFLib) {
+      logEl.textContent = "pdf-lib did not load. Make sure js/pdf-lib.min.js exists in the PulseCraft repo.";
+      return;
+    }
+
+    if (files.length === 0) {
+      logEl.textContent = "No PDFs detected. Drop a .pdf file.";
+      return;
+    }
+
+    run(files); // <-- auto process + auto download
+  });
+
+  window.addEventListener('load', () => {
+    if (!window.PDFLib) {
+      logEl.textContent = "pdf-lib did not load. Make sure js/pdf-lib.min.js exists in the PulseCraft repo.";
+    } else {
+      logEl.textContent = "Ready. Drag & drop PDFs onto the box.\n";
+    }
+  });
+})();
+</script>
+</body>
+</html>
