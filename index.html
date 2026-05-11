@@ -16,6 +16,9 @@
       --shadow: rgba(0, 0, 0, 0.28);
       --tc: #1976d2;
       --cc: #b88a36;
+      --pgu: #5b6f8f;
+      --card-width: 350px;
+      --card-gap: 28px;
     }
 
     * {
@@ -47,15 +50,16 @@
 
     main {
       width: 100%;
-      max-width: 1100px;
+      max-width: calc((var(--card-width) * 3) + (var(--card-gap) * 2));
       margin: 0 auto;
       padding: 8px 0 40px;
     }
 
     .utility-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(var(--card-width), var(--card-width)));
+      gap: var(--card-gap);
+      justify-content: center;
     }
 
     .tool-card {
@@ -77,7 +81,7 @@
     }
 
     .preview {
-      height: 230px;
+      height: 220px;
       background: #fff;
       border-bottom: 1px solid var(--border);
       overflow: hidden;
@@ -124,6 +128,10 @@
       background: var(--cc);
     }
 
+    .pgu {
+      background: var(--pgu);
+    }
+
     .tool-title {
       margin: 0;
       font-size: 1.15em;
@@ -160,10 +168,9 @@
 
     /* 
       Icon-only layout.
-      This kicks in earlier so tablet/small browser widths
-      do not keep showing cramped preview windows.
+      This kicks in only at phone-sized widths.
     */
-    @media (max-width: 900px) {
+    @media (max-width: 600px) {
       body {
         margin: 20px auto;
         max-width: 92%;
@@ -273,6 +280,19 @@
           <div>
             <h2 class="tool-title">Collator Calculator</h2>
             <p class="tool-desc">Calculate and visualize collator numbers from UPC input.</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="tool-card" href="PDF_Geometry_Updater.html">
+        <div class="preview">
+          <iframe src="PDF_Geometry_Updater.html" title="PDF Geometry Updater preview"></iframe>
+        </div>
+        <div class="tool-info">
+          <div class="app-icon pgu">PGU</div>
+          <div>
+            <h2 class="tool-title">PDF Geometry Updater</h2>
+            <p class="tool-desc">Adjust PDF TrimBox geometry with custom inset values.</p>
           </div>
         </div>
       </a>
