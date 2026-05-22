@@ -4,16 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PulseCraft Utilities</title>
+  <link rel="stylesheet" href="css/pulsecraft.css" />
 
   <style>
     :root {
-      --bg: #161c2d;
-      --fg: #f4f6fa;
-      --panel: #222d44;
-      --panel-alt: #252a3d;
-      --border: #444f67;
-      --muted: rgba(244, 246, 250, 0.72);
-      --shadow: rgba(0, 0, 0, 0.28);
       --tc: #1976d2;
       --cc: #b88a36;
       --pgu: #5b6f8f;
@@ -21,14 +15,7 @@
       --card-gap: 28px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: sans-serif;
       margin: 20px auto;
       max-width: 90%;
       min-height: 100vh;
@@ -146,26 +133,6 @@
       line-height: 1.35;
     }
 
-    .footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      background-color: #222d44;
-      z-index: 1000;
-    }
-
-    .footer-container {
-      max-width: 90%;
-      margin: 0 auto;
-      text-align: right;
-      color: #fff;
-      opacity: .5;
-      font-size: .7em;
-      padding: 5px 0 5px 0;
-      letter-spacing: 0em;
-    }
-
     /* 
       Icon-only layout.
       This kicks in only at phone-sized widths.
@@ -236,9 +203,6 @@
         display: none;
       }
 
-      .footer-container {
-        text-align: center;
-      }
     }
 
     @media (max-width: 360px) {
@@ -300,10 +264,9 @@
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="footer-container">
-      Copyright &copy; 2025, 2026 PulseCraft
-    </div>
-  </footer>
+  <footer class="footer" data-footer-type="index"></footer>
+
+  <script src="js/pulsecraft-footer.js"></script>
+
 </body>
 </html>

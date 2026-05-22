@@ -4,25 +4,20 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Collator Calculator</title>
+<link rel="stylesheet" href="css/pulsecraft.css" />
 <style>
-  :root{
-    --bg:#161c2d;
-    --panel:#636363;
-    --ink:#fff;
-    --muted:#fff;
+  :root{ 
+    --collcalc-panel:#636363; 
+    --collcalc-ink:#fff; 
+    --collcalc-muted:#fff; 
     --accent:#2563eb;
     --soft:#eef4ff;
     --danger:#d11d1d;
     --dark-text:#202428;
   }
-
-  *{box-sizing:border-box}
-
+  
   body{
     margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
     padding-bottom:34px;
   }
 
@@ -33,7 +28,7 @@
   }
 
   .card{
-    background:var(--panel);
+    background:var(--collcalc-panel);
     border:1px solid #555;
     border-radius:18px;
     box-shadow:0 10px 30px rgba(0,0,0,.25);
@@ -42,14 +37,14 @@
 
   header{
     padding:clamp(6px, .9vw, 10px) clamp(14px, 2.2vw, 24px) clamp(2px, .4vw, 4px);
-    background:#636363;
+    background:var(--collcalc-panel);
   }
 
   h1{
     margin:0;
     font-size:clamp(19px, 2.4vw, 24px);
     letter-spacing:.2px;
-    color:#fff;
+    color:var(--collcalc-ink);
   }
 
   .main{
@@ -234,64 +229,11 @@
     border-bottom:0;
   }
 
-  .printbar{
-    display:flex;
-    gap:10px;
-    margin-top:8px;
-    flex-wrap:wrap;
-  }
-
   .small{
     font-size:11px;
-    color:var(--muted);
+    color:var(--collcalc-muted);
     margin-top:7px;
     line-height:1.22;
-  }
-
-  .home-row {
-    margin-top:8px;
-    margin-bottom:34px;
-    width:100%;
-  }
-
-  .home-button {
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-width:34px;
-    height:34px;
-    padding:0 10px;
-    border-radius:8px;
-    background:#222d44;
-    color:#fff;
-    border:1px solid #444f67;
-    text-decoration:none;
-    font-size:16px;
-    font-weight:bold;
-    opacity:0.75;
-  }
-
-  .home-button:hover { opacity:1; }
-
-  .footer {
-    position:fixed;
-    left:0;
-    bottom:0;
-    width:100%;
-    background-color:#222d44;
-    z-index:1000;
-  }
-
-  .footer-container {
-    max-width:90%;
-    margin:0 auto;
-    text-align:center;
-    color:#fff;
-    opacity:.5;
-    font-size:.7em;
-    padding:5px 0 5px 0;
-    letter-spacing:0em;
   }
 
   @media (max-width:1020px){
@@ -322,7 +264,6 @@
     /* Keep the main vertical table from stretching/distorting on phone */
     table{width:auto}
 
-    .footer-container{text-align:center}
   }
 
   @media (max-height:760px){
@@ -340,7 +281,6 @@
     th,td{padding:2px 5px}
     .chip{height:11px}
     tr.spacer-row td{height:6px}
-    .printbar{margin-top:6px}
   }
 
   @media print{
@@ -397,14 +337,13 @@
           </div>
         </div>
 
-        <div class="printbar"><button class="secondary" onclick="window.print()" type="button">Print</button></div>
-        <p class="small">For a full UPC like <b>023906918347</b>, the calculator uses <b>91834</b> and ignores the final check digit <b>7</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly. Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1.</p>
+        <p class="small">For a full UPC like <b>1-23456-78901-2</b>, the calculator uses <b>78901</b> and ignores the final check digit <b>2</b>. If you only enter 5 digits, those 5 digits are treated as the collator number directly. Logic: positions 1–10 use weights 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. Positions 11–17 use weights 64, 32, 16, 8, 4, 2, 1.</p>
       </section>
     </div>
   </div>
 
   <div class="home-row">
-    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">⌂ Home</a>
+    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
   </div>
 </div>
 
@@ -495,7 +434,7 @@ document.getElementById('upc').addEventListener('input',calculate);
 document.getElementById('upc').addEventListener('focus',()=>focusUPC(true));
 document.getElementById('upc').addEventListener('click',()=>focusUPC(true));
 document.getElementById('calc').addEventListener('click',()=>{calculate();focusUPC(true);});
-document.getElementById('sample').addEventListener('click',()=>{document.getElementById('upc').value='023906918347';calculate();focusUPC(true);});
+document.getElementById('sample').addEventListener('click',()=>{document.getElementById('upc').value='123456789012';calculate();focusUPC(true);});
 document.addEventListener('click',(event)=>{
   if(event.target.closest('button, a')) return;
   focusUPC(true);
@@ -511,10 +450,9 @@ window.addEventListener('load',()=>{
 });
 </script>
 
-<footer class="footer">
-  <div class="footer-container">
-    Web version by PulseCraft, adapted from an existing Excel-based collator calculator. Original concept/design credited to its original creator. Provided as-is for convenience only. Verify before production use. No warranty is expressed or implied. Not responsible or liable for errors, data loss, production issues, or damages of any kind. Ver 2.0.0.2026
-  </div>
-</footer>
+<footer class="footer" data-footer-type="collator" data-version="4.0.0.2026"></footer>
+
+<script src="js/pulsecraft-footer.js"></script>
+
 </body>
 </html>

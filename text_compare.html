@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Text Compare Tool</title>
+  <link rel="stylesheet" href="css/pulsecraft.css" />
   <style>
     :root {
-      --bg: #161c2d;
-      --fg: #f4f6fa;
       --box-bg: #fff;
       --box-fg: #222;
       --box-border: #ccc;
@@ -25,8 +24,6 @@
       --text-size: 1em;
     }
     [data-theme="dark"] {
-      --bg: #161c2d;
-      --fg: #f4f6fa;
       --box-bg: #222d44;
       --box-fg: #f4f6fa;
       --box-border: #444f67;
@@ -41,11 +38,11 @@
       --highlight-char: #ff5370;
     }
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: sans-serif;
       margin: 20px auto;
       max-width: 90%;
+      min-width: 500px;
+      transition: background 0.2s, color 0.2s;
+      padding-bottom: 70px;
       transition: background 0.2s, color 0.2s;
     }
     body, h1, h2, h3, h4, h5, h6, label, .toggle-label, .case-label {
@@ -61,10 +58,11 @@
       margin-bottom: 12px;
     }
     .app-title{
+      margin: 0;
       font-weight: 800;
-      font-size: 1.25em;
-      line-height: 1;
-      white-space: nowrap;
+      font-size: 1.65em;
+      line-height: 1.1;
+      white-space: nowrap
     }
     .topbar-right{
       display:flex;
@@ -303,59 +301,6 @@
       margin-bottom: 12px;
     }
 
-    .home-row {
-      margin-top: -8px;
-      margin-bottom: 34px;
-      width: 100%;
-    }
-
-    .home-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-width: 34px;
-      height: 34px;
-      padding: 0 10px;
-      border-radius: 8px;
-      background: #222d44;
-      color: #fff;
-      border: 1px solid #444f67;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
-      opacity: 0.75;
-    }
-
-    .home-button:hover {
-      opacity: 1;
-    }
-
-    .footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      background-color: #222d44;
-      z-index: 1000;
-    }
-    .footer-container {
-      max-width: 90%;
-      margin: 0 auto;
-      text-align: right;
-      color: #fff;
-      opacity: .5;
-      font-size: .7em;
-      padding: 5px 0 5px 0;
-      letter-spacing: 0em;
-    }
-
-	@media (max-width: 620px) {
-	  .footer-container {
-	    text-align: center;
-	  }
-	}
-
   </style>
 </head>
 
@@ -363,7 +308,7 @@
   <!-- Title inline with Theme toggle -->
   <div class="topbar">
     <div class="topbar-left">
-      <span class="app-title">Text Compare Tool</span>
+      <h1 class="app-title">Text Compare Tool</h1>
     </div>
 
     <div class="topbar-right">
@@ -433,7 +378,7 @@
   </div>
 
   <div class="home-row">
-    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">⌂ Home</a>
+    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
@@ -567,10 +512,9 @@
     }
   </script>
 
-  <footer class="footer">
-    <div class="footer-container">
-      Copyright &copy; 2025, 2026 PulseCraft • Free for personal and commercial use. All rights reserved. No warranty is expressed or implied. Use at your own risk. Not responsible or liable for any errors, data loss, or damages of any kind. Ver 4.3.4.2026
-    </div>
-  </footer>
+  <footer class="footer" data-footer-type="common" data-version="4.0.0.2026"></footer>
+
+  <script src="js/pulsecraft-footer.js"></script>
+
 </body>
 </html>
