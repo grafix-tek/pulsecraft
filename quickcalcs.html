@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>PulseCraft Quick Converter</title>
+	<link rel="stylesheet" href="css/pulsecraft.css" />
+
+	<style>
+		:root {
+			--qc-accent: #607895;
+			--qc-input-bg: #ffffff;
+			--qc-input-fg: #111827;
+			--qc-result-bg: #eef4ff;
+			--qc-result-fg: #111827;
+			--qc-danger: #ff8c8c;
+			--qc-card-min: 280px;
+		}
+
+		body {
+			margin: 20px auto;
+			max-width: 92%;
+			min-height: 100vh;
+			padding-bottom: 80px;
+		}
+
+		header {
+			text-align: center;
+			margin-bottom: 18px;
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 1.65em;
+			font-weight: 800;
+			line-height: 1.1;
+			color: var(--fg);
+		}
+
+		.subtitle {
+			margin: 8px auto 0;
+			color: var(--muted);
+			font-size: 0.92em;
+			line-height: 1.35;
+			max-width: 760px;
+		}
+
+		.tabs {
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			flex-wrap: wrap;
+			margin: 18px 0 20px;
+		}
+
+		.tab-button {
+			border: 1px solid var(--border);
+			background: var(--panel);
+			color: var(--fg);
+			border-radius: 999px;
+			padding: 9px 16px;
+			font-size: 0.95em;
+			font-weight: 700;
+			cursor: pointer;
+			opacity: 0.78;
+		}
+
+		.tab-button:hover {
+			opacity: 1;
+		}
+
+		.tab-button.active {
+			background: var(--qc-accent);
+			color: #ffffff;
+			border-color: rgba(255, 255, 255, 0.25);
+			opacity: 1;
+		}
+
+		.tool-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(var(--qc-card-min), 1fr));
+			gap: 16px;
+			align-items: stretch;
+		}
+
+		.tool-card {
+			display: flex;
+			flex-direction: column;
+			background: var(--tool-tint, var(--panel));
+			border: 1px solid var(--border);
+			border-top: 5px solid var(--tool-accent, var(--qc-accent));
+			border-radius: 14px;
+			box-shadow: 0 6px 16px var(--shadow);
+			padding: 16px;
+			height: 100%;
+			overflow: visible;
+		}
+
+		/* =========================================================
+		   PulseCraft Quick Converter Tool Color Registry
+
+		   PURPOSE:
+		   Each mini tool has stable identity colors so users can
+		   visually recognize it over time.
+
+		   EACH RELEASED MINI TOOL OWNS TWO LOCKED COLORS:
+		   1. --qc-color-* = the strong top accent bar color.
+		   2. --qc-tint-*  = the muted card background color.
+
+		   TINT RULE:
+		   Tint colors should remain muted versions of their matching
+		   strong accent color. Do not replace a tint with an unrelated
+		   color family. The tint should feel like the same tool color,
+		   only softer/darker for the card background.
+
+		   RULES FOR FUTURE UPDATES:
+		   1. Do not change existing --qc-color-* values after release.
+		   2. Do not change existing --qc-tint-* values after release.
+		   3. Do not reuse a data-tool name for a different mini tool.
+		   4. If a visible tool title changes, keep its data-tool name.
+		   5. When adding a new mini tool, add one new --qc-color-* variable
+		      and one new matching --qc-tint-* variable.
+		   6. New tools should receive new colors only; old colors stay locked.
+		   7. The data-tool value connects the HTML card to its permanent
+		      accent color and tint color.
+
+		   EXAMPLE:
+		   <section class="tool-card" data-tool="fraction" ...>
+		   uses --qc-color-fraction and --qc-tint-fraction below.
+		   ========================================================= */
+
+		:root {
+			--qc-color-fraction: #1976d2;
+			--qc-color-scientific: #6d5dfc;
+			--qc-color-temperature: #d45b5b;
+			--qc-color-length: #2e8b57;
+			--qc-color-mass: #b88a36;
+			--qc-color-volume: #008c95;
+			--qc-color-travel-speed: #8a63a8;
+			--qc-color-time: #5b6f8f;
+			--qc-color-hours-minutes: #c46a2b;
+			--qc-color-data: #4f7cac;
+			--qc-color-network-speed: #2f9e44;
+			--qc-color-scale: #9a7b00;
+			--qc-color-bleed: #9b3d7a;
+			--qc-color-construction: #7a7a7a;
+
+			--qc-tint-fraction: #203d63;
+			--qc-tint-scientific: #32386c;
+			--qc-tint-temperature: #493749;
+			--qc-tint-length: #254248;
+			--qc-tint-mass: #434141;
+			--qc-tint-volume: #1b4256;
+			--qc-tint-travel-speed: #39395a;
+			--qc-tint-time: #2f3c54;
+			--qc-tint-hours-minutes: #463a3e;
+			--qc-tint-data: #2c3e5b;
+			--qc-tint-network-speed: #254644;
+			--qc-tint-scale: #3c3e35;
+			--qc-tint-bleed: #3d3150;
+			--qc-tint-construction: #353e50;
+		}
+
+		/* Connect each stable data-tool identity to its locked colors. */
+		.tool-card[data-tool="fraction"] { --tool-accent: var(--qc-color-fraction); --tool-tint: var(--qc-tint-fraction); }
+		.tool-card[data-tool="scientific"] { --tool-accent: var(--qc-color-scientific); --tool-tint: var(--qc-tint-scientific); }
+		.tool-card[data-tool="temperature"] { --tool-accent: var(--qc-color-temperature); --tool-tint: var(--qc-tint-temperature); }
+		.tool-card[data-tool="length"] { --tool-accent: var(--qc-color-length); --tool-tint: var(--qc-tint-length); }
+		.tool-card[data-tool="mass"] { --tool-accent: var(--qc-color-mass); --tool-tint: var(--qc-tint-mass); }
+		.tool-card[data-tool="volume"] { --tool-accent: var(--qc-color-volume); --tool-tint: var(--qc-tint-volume); }
+		.tool-card[data-tool="travel-speed"] { --tool-accent: var(--qc-color-travel-speed); --tool-tint: var(--qc-tint-travel-speed); }
+		.tool-card[data-tool="time"] { --tool-accent: var(--qc-color-time); --tool-tint: var(--qc-tint-time); }
+		.tool-card[data-tool="hours-minutes"] { --tool-accent: var(--qc-color-hours-minutes); --tool-tint: var(--qc-tint-hours-minutes); }
+		.tool-card[data-tool="data"] { --tool-accent: var(--qc-color-data); --tool-tint: var(--qc-tint-data); }
+		.tool-card[data-tool="network-speed"] { --tool-accent: var(--qc-color-network-speed); --tool-tint: var(--qc-tint-network-speed); }
+		.tool-card[data-tool="scale"] { --tool-accent: var(--qc-color-scale); --tool-tint: var(--qc-tint-scale); }
+		.tool-card[data-tool="bleed"] { --tool-accent: var(--qc-color-bleed); --tool-tint: var(--qc-tint-bleed); }
+		.tool-card[data-tool="construction"] { --tool-accent: var(--qc-color-construction); --tool-tint: var(--qc-tint-construction); }
+
+		.tool-card.hidden {
+			display: none;
+		}
+
+		.tool-heading {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin: 0 0 12px;
+		}
+
+		.tool-title {
+			margin: 0;
+			font-size: 1.02em;
+			font-weight: 800;
+			color: var(--fg);
+		}
+
+		.tool-icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			flex: 0 0 auto;
+			width: 28px;
+			height: 28px;
+			color: rgba(255, 255, 255, 0.9);
+			opacity: 0.9;
+		}
+
+		.tool-icon svg {
+			width: 24px;
+			height: 24px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+
+		.compact-row {
+			display: grid;
+			grid-template-columns: minmax(95px, 1fr) minmax(130px, 1.2fr);
+			gap: 10px;
+			align-items: end;
+			margin-bottom: 10px;
+		}
+
+		.two-col {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			align-items: end;
+			margin-bottom: 10px;
+		}
+
+		.three-col {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			gap: 10px;
+			align-items: end;
+			margin-bottom: 10px;
+		}
+
+		label {
+			display: block;
+			color: var(--muted);
+			font-size: 0.78em;
+			font-weight: 700;
+			margin-bottom: 4px;
+		}
+
+		input,
+		select {
+			width: 100%;
+			border: 1px solid var(--border);
+			border-radius: 9px;
+			padding: 9px 10px;
+			font-size: 0.96em;
+			background: var(--qc-input-bg);
+			color: var(--qc-input-fg);
+		}
+
+		input[readonly] {
+			background: var(--qc-result-bg);
+			color: var(--qc-result-fg);
+			font-weight: 700;
+		}
+
+		.unit-picker {
+			position: relative;
+		}
+
+		.unit-input {
+			padding-right: 30px;
+		}
+
+		.unit-arrow {
+			position: absolute;
+			right: 9px;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+			color: #374151;
+			font-size: 0.78em;
+		}
+
+		.unit-list {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: calc(100% + 4px);
+			z-index: 2000;
+			background: #ffffff;
+			color: #111827;
+			border: 1px solid #9ca3af;
+			border-radius: 10px;
+			box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+			max-height: 220px;
+			overflow-y: auto;
+			display: none;
+		}
+
+		.unit-option {
+			padding: 8px 10px;
+			cursor: pointer;
+			font-size: 0.92em;
+			border-bottom: 1px solid #e5e7eb;
+		}
+
+		.unit-option:last-child {
+			border-bottom: 0;
+		}
+
+		.unit-option:hover,
+		.unit-option.active {
+			background: #eef4ff;
+		}
+
+		.small-note {
+			color: var(--muted);
+			font-size: 0.78em;
+			line-height: 1.35;
+			margin-top: 8px;
+		}
+
+		.error {
+			color: var(--qc-danger);
+			font-size: 0.82em;
+			min-height: 1.1em;
+			margin-top: 6px;
+		}
+
+		.card-section {
+			border-top: 1px solid var(--border);
+			margin-top: 12px;
+			padding-top: 12px;
+		}
+
+		.home-row {
+			margin-top: 24px;
+		}
+
+		@media (max-width: 600px) {
+			body {
+				max-width: 94%;
+			}
+
+			.compact-row,
+			.two-col,
+			.three-col {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>QuickCalcs</h1>
+	</header>
+
+	<nav class="tabs" aria-label="Converter categories">
+		<button class="tab-button active" type="button" data-tab="general">General</button>
+		<button class="tab-button" type="button" data-tab="prepress">Prepress</button>
+		<button class="tab-button" type="button" data-tab="construction">Construction</button>
+		<button class="tab-button" type="button" data-tab="all">All</button>
+	</nav>
+
+	<main>
+		<div class="tool-grid">
+
+			<section class="tool-card" data-tool="fraction" data-categories="general prepress">
+				<div class="tool-heading">
+					<h2 class="tool-title">Fraction ↔ Decimal</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></svg></span>
+				</div>
+				<div class="two-col">
+					<div>
+						<label for="fractionInput">Fraction</label>
+						<input id="fractionInput" type="text" value="3/16" autocomplete="off" />
+					</div>
+					<div>
+						<label for="decimalInput">Decimal</label>
+						<input id="decimalInput" type="text" value="0.1875" autocomplete="off" />
+					</div>
+				</div>
+				<div id="fractionError" class="error"></div>
+			</section>
+
+			<section class="tool-card" data-tool="scientific" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Scientific Notation ↔ Full Number</h2>
+				<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 18h10"/><path d="m17 21 3-3-3-3"/><path d="M3 11h.01"/><rect x="15" y="3" width="5" height="8" rx="2.5"/><rect x="6" y="3" width="5" height="8" rx="2.5"/></svg></span>
+				</div>
+				<div>
+					<label for="sciInput">Scientific / Compact</label>
+					<input id="sciInput" type="text" value="1.23e6" autocomplete="off" />
+				</div>
+				<div style="margin-top: 10px;">
+					<label for="fullNumberInput">Full Number</label>
+					<input id="fullNumberInput" type="text" value="1,230,000" autocomplete="off" />
+				</div>
+				<div id="sciError" class="error"></div>
+			</section>
+
+			<section class="tool-card" data-tool="temperature" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Temperature</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="tempValueA">Value</label>
+						<input id="tempValueA" type="number" value="32" step="any" />
+					</div>
+					<div>
+						<label for="tempUnitA">Unit</label>
+						<div class="unit-picker" data-input="tempUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="tempValueB">Value</label>
+						<input id="tempValueB" type="number" value="0" step="any" />
+					</div>
+					<div>
+						<label for="tempUnitB">Unit</label>
+						<div class="unit-picker" data-input="tempUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="length" data-categories="general prepress">
+				<div class="tool-heading">
+					<h2 class="tool-title">Length</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="lengthValueA">Value</label>
+						<input id="lengthValueA" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="lengthUnitA">Unit</label>
+						<div class="unit-picker" data-input="lengthUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="lengthValueB">Value</label>
+						<input id="lengthValueB" type="number" value="25.4" step="any" />
+					</div>
+					<div>
+						<label for="lengthUnitB">Unit</label>
+						<div class="unit-picker" data-input="lengthUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="mass" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Weight / Mass</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="massValueA">Value</label>
+						<input id="massValueA" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="massUnitA">Unit</label>
+						<div class="unit-picker" data-input="massUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="massValueB">Value</label>
+						<input id="massValueB" type="number" value="0.453592" step="any" />
+					</div>
+					<div>
+						<label for="massUnitB">Unit</label>
+						<div class="unit-picker" data-input="massUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="volume" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Volume</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 22v-8"/><path d="M2.336 8.89 10 14l11.715-7.029"/><path d="M22 14a2 2 0 0 1-.971 1.715l-10 6a2 2 0 0 1-2.138-.05l-6-4A2 2 0 0 1 2 16v-6a2 2 0 0 1 .971-1.715l10-6a2 2 0 0 1 2.138.05l6 4A2 2 0 0 1 22 8z"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="volumeValueA">Value</label>
+						<input id="volumeValueA" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="volumeUnitA">Unit</label>
+						<div class="unit-picker" data-input="volumeUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="volumeValueB">Value</label>
+						<input id="volumeValueB" type="number" value="0.264172" step="any" />
+					</div>
+					<div>
+						<label for="volumeUnitB">Unit</label>
+						<div class="unit-picker" data-input="volumeUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="travel-speed" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Travel Speed</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="travelSpeedValueA">Value</label>
+						<input id="travelSpeedValueA" type="number" value="60" step="any" />
+					</div>
+					<div>
+						<label for="travelSpeedUnitA">Unit</label>
+						<div class="unit-picker" data-input="travelSpeedUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="travelSpeedValueB">Value</label>
+						<input id="travelSpeedValueB" type="number" value="96.5606" step="any" />
+					</div>
+					<div>
+						<label for="travelSpeedUnitB">Unit</label>
+						<div class="unit-picker" data-input="travelSpeedUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="time" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Time</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l-4 2"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="timeValueA">Value</label>
+						<input id="timeValueA" type="number" value="1.5" step="any" />
+					</div>
+					<div>
+						<label for="timeUnitA">Unit</label>
+						<div class="unit-picker" data-input="timeUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="timeValueB">Value</label>
+						<input id="timeValueB" type="number" value="90" step="any" />
+					</div>
+					<div>
+						<label for="timeUnitB">Unit</label>
+						<div class="unit-picker" data-input="timeUnitB"></div>
+					</div>
+				</div>
+				<p class="small-note">Months/years are approximate in this draft.</p>
+			</section>
+
+			<section class="tool-card" data-tool="hours-minutes" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Hours + Minutes</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg></span>
+				</div>
+				<div class="two-col">
+					<div>
+						<label for="hmHours">Hours</label>
+						<input id="hmHours" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="hmMinutes">Minutes</label>
+						<input id="hmMinutes" type="number" value="23" step="any" />
+					</div>
+				</div>
+				<div class="compact-row card-section">
+					<div>
+						<label for="hmOutputValue">Value</label>
+						<input id="hmOutputValue" type="text" value="83" autocomplete="off" />
+					</div>
+					<div>
+						<label for="hmOutputUnit">Unit</label>
+						<div class="unit-picker" data-input="hmOutputUnit"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="data" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Data Storage</h2>
+				<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="dataValueA">Value</label>
+						<input id="dataValueA" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="dataUnitA">Unit</label>
+						<div class="unit-picker" data-input="dataUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="dataValueB">Value</label>
+						<input id="dataValueB" type="number" value="1024" step="any" />
+					</div>
+					<div>
+						<label for="dataUnitB">Unit</label>
+						<div class="unit-picker" data-input="dataUnitB"></div>
+					</div>
+				</div>
+				<p class="small-note">Uses binary storage units for KB/MB/GB/TB in this draft.</p>
+			</section>
+
+			<section class="tool-card" data-tool="network-speed" data-categories="general">
+				<div class="tool-heading">
+					<h2 class="tool-title">Network Speed</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="networkSpeedValueA">Value</label>
+						<input id="networkSpeedValueA" type="number" value="100" step="any" />
+					</div>
+					<div>
+						<label for="networkSpeedUnitA">Unit</label>
+						<div class="unit-picker" data-input="networkSpeedUnitA"></div>
+					</div>
+				</div>
+				<div class="compact-row">
+					<div>
+						<label for="networkSpeedValueB">Value</label>
+						<input id="networkSpeedValueB" type="number" value="12.5" step="any" />
+					</div>
+					<div>
+						<label for="networkSpeedUnitB">Unit</label>
+						<div class="unit-picker" data-input="networkSpeedUnitB"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="scale" data-categories="prepress">
+				<div class="tool-heading">
+					<h2 class="tool-title">Scale Percentage</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M14 15H9v-5"/><path d="M16 3h5v5"/><path d="M21 3 9 15"/></svg></span>
+				</div>
+				<div class="three-col">
+					<div>
+						<label for="scaleOriginal">Original</label>
+						<input id="scaleOriginal" type="number" value="8.5" step="any" />
+					</div>
+					<div>
+						<label for="scaleNew">New</label>
+						<input id="scaleNew" type="number" value="6" step="any" />
+					</div>
+					<div>
+						<label for="scalePercent">Scale %</label>
+						<input id="scalePercent" type="text" readonly />
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="bleed" data-categories="prepress">
+				<div class="tool-heading">
+					<h2 class="tool-title">Bleed / Trim Final Size</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></span>
+				</div>
+				<div class="three-col">
+					<div>
+						<label for="trimWidth">Trim Width</label>
+						<input id="trimWidth" type="number" value="4" step="any" />
+					</div>
+					<div>
+						<label for="trimHeight">Trim Height</label>
+						<input id="trimHeight" type="number" value="6" step="any" />
+					</div>
+					<div>
+						<label for="bleedEachSide">Bleed Each Side</label>
+						<input id="bleedEachSide" type="number" value="0.125" step="any" />
+					</div>
+				</div>
+				<div class="two-col card-section">
+					<div>
+						<label for="finalWidth">Final Width</label>
+						<input id="finalWidth" type="text" readonly />
+					</div>
+					<div>
+						<label for="finalHeight">Final Height</label>
+						<input id="finalHeight" type="text" readonly />
+					</div>
+				</div>
+			</section>
+
+			<section class="tool-card" data-tool="construction" data-categories="construction">
+				<div class="tool-heading">
+					<h2 class="tool-title">Construction Helpers</h2>
+					<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 21V10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v11"/><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 1.132-1.803l7.95-3.974a2 2 0 0 1 1.837 0l7.948 3.974A2 2 0 0 1 22 8z"/><path d="M6 13h12"/><path d="M6 17h12"/></svg></span>
+				</div>
+				<p class="small-note">Placeholder for future roofing/supply calculators after the real workflow is clearer.</p>
+				<div class="two-col">
+					<div>
+						<label for="roofSquares">Squares</label>
+						<input id="roofSquares" type="number" value="1" step="any" />
+					</div>
+					<div>
+						<label for="roofBundlesPerSquare">Bundles / Square</label>
+						<input id="roofBundlesPerSquare" type="number" value="3" step="any" />
+					</div>
+				</div>
+				<div>
+					<label for="roofBundles">Estimated Bundles</label>
+					<input id="roofBundles" type="text" readonly />
+				</div>
+			</section>
+
+		</div>
+
+		<div class="home-row">
+			<a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
+		</div>
+	</main>
+
+	<footer class="footer" data-footer-type="common" data-version="1.0.0.2026"></footer>
+
+	<script src="js/pulsecraft-footer.js"></script>
+
+	<script>
+		const formatNumber = (value, maxDecimals = 8) => {
+			if (!Number.isFinite(value)) return "";
+			const rounded = Number(value.toFixed(maxDecimals));
+			return String(rounded);
+		};
+
+		const units = {
+			temp: [
+				{ label: "Celsius", aliases: ["c", "celsius", "centigrade"], toBase: v => v, fromBase: v => v },
+				{ label: "Fahrenheit", aliases: ["f", "fahrenheit"], toBase: v => (v - 32) * 5 / 9, fromBase: v => (v * 9 / 5) + 32 },
+				{ label: "Kelvin", aliases: ["k", "kelvin"], toBase: v => v - 273.15, fromBase: v => v + 273.15 },
+				{ label: "Rankine", aliases: ["r", "rankine"], toBase: v => (v - 491.67) * 5 / 9, fromBase: v => (v + 273.15) * 9 / 5 }
+			],
+			length: [
+				{ label: "Point", aliases: ["pt", "point", "points"], factor: 0.0003527777778 },
+				{ label: "Millimeter", aliases: ["mm", "millimeter", "millimeters"], factor: 0.001 },
+				{ label: "Pica", aliases: ["pc", "pica", "picas"], factor: 0.004233333333 },
+				{ label: "Centimeter", aliases: ["cm", "centimeter", "centimeters"], factor: 0.01 },
+				{ label: "Inch", aliases: ["in", "inch", "inches"], factor: 0.0254 },
+				{ label: "Foot", aliases: ["ft", "foot", "feet"], factor: 0.3048 },
+				{ label: "Yard", aliases: ["yd", "yard", "yards"], factor: 0.9144 },
+				{ label: "Meter", aliases: ["m", "meter", "meters", "metre"], factor: 1 },
+				{ label: "Kilometer", aliases: ["km", "kilometer", "kilometers"], factor: 1000 },
+				{ label: "Mile", aliases: ["mi", "mile", "miles"], factor: 1609.344 }
+			],
+			mass: [
+				{ label: "Gram", aliases: ["g", "gram", "grams"], factor: 0.001 },
+				{ label: "Ounce", aliases: ["oz", "ounce", "ounces"], factor: 0.028349523125 },
+				{ label: "Pound", aliases: ["lb", "lbs", "pound", "pounds"], factor: 0.45359237 },
+				{ label: "Kilogram", aliases: ["kg", "kilogram", "kilograms"], factor: 1 },
+				{ label: "US Ton", aliases: ["ton", "us ton", "short ton"], factor: 907.18474 },
+				{ label: "Metric Ton", aliases: ["t", "tonne", "metric ton"], factor: 1000 }
+			],
+			volume: [
+				{ label: "Milliliter", aliases: ["ml", "milliliter", "milliliters"], factor: 0.001 },
+				{ label: "Cubic Inch", aliases: ["cu in", "cubic inch", "cubic inches"], factor: 0.016387064 },
+				{ label: "Fluid Ounce", aliases: ["fl oz", "fluid ounce", "fluid ounces"], factor: 0.0295735295625 },
+				{ label: "Cup", aliases: ["cup", "cups"], factor: 0.2365882365 },
+				{ label: "Pint", aliases: ["pt", "pint", "pints"], factor: 0.473176473 },
+				{ label: "Quart", aliases: ["qt", "quart", "quarts"], factor: 0.946352946 },
+				{ label: "Liter", aliases: ["l", "liter", "liters", "litre"], factor: 1 },
+				{ label: "Gallon", aliases: ["gal", "gallon", "gallons"], factor: 3.785411784 },
+				{ label: "Cubic Foot", aliases: ["cu ft", "cubic foot", "cubic feet"], factor: 28.316846592 }
+			],
+			travelSpeed: [
+				{ label: "Kilometers per Hour", aliases: ["kph", "km/h", "kilometers per hour"], factor: 0.2777777778 },
+				{ label: "Feet per Second", aliases: ["ft/s", "feet per second"], factor: 0.3048 },
+				{ label: "Miles per Hour", aliases: ["mph", "miles per hour"], factor: 0.44704 },
+				{ label: "Knots", aliases: ["kt", "knot", "knots", "nautical miles per hour"], factor: 0.5144444444 },
+				{ label: "Meters per Second", aliases: ["m/s", "meters per second"], factor: 1 },
+				{ label: "Mach", aliases: ["mach"], factor: 343 }
+			],
+			time: [
+				{ label: "Second", aliases: ["sec", "second", "seconds"], factor: 1 },
+				{ label: "Minute", aliases: ["min", "minute", "minutes"], factor: 60 },
+				{ label: "Hour", aliases: ["hr", "hour", "hours"], factor: 3600 },
+				{ label: "Day", aliases: ["day", "days"], factor: 86400 },
+				{ label: "Week", aliases: ["week", "weeks"], factor: 604800 },
+				{ label: "Month, avg", aliases: ["month", "months", "average month"], factor: 2629800 },
+				{ label: "Year, 365 days", aliases: ["year", "years", "365"], factor: 31536000 },
+				{ label: "Year, 365.25 days", aliases: ["year average", "365.25"], factor: 31557600 }
+			],
+			data: [
+				{ label: "Bit", aliases: ["b", "bit", "bits"], factor: 1 },
+				{ label: "Byte", aliases: ["byte", "bytes", "B"], factor: 8 },
+				{ label: "Kilobyte", aliases: ["kb", "kilobyte", "kilobytes"], factor: 8 * 1024 },
+				{ label: "Megabit", aliases: ["mbit", "megabit", "megabits"], factor: 1024 ** 2 },
+				{ label: "Megabyte", aliases: ["mb", "megabyte", "megabytes"], factor: 8 * 1024 ** 2 },
+				{ label: "Gigabit", aliases: ["gbit", "gigabit", "gigabits"], factor: 1024 ** 3 },
+				{ label: "Gigabyte", aliases: ["gb", "gigabyte", "gigabytes"], factor: 8 * 1024 ** 3 },
+				{ label: "Terabyte", aliases: ["tb", "terabyte", "terabytes"], factor: 8 * 1024 ** 4 }
+			],
+			networkSpeed: [
+				{ label: "Kbps", aliases: ["kbps", "kilobits per second"], factor: 1000 },
+				{ label: "KB/s", aliases: ["kb/s", "kilobytes per second"], factor: 8 * 1000 },
+				{ label: "Mbps", aliases: ["mbps", "megabits per second"], factor: 1000 ** 2 },
+				{ label: "MB/s", aliases: ["mb/s", "megabytes per second"], factor: 8 * 1000 ** 2 },
+				{ label: "Gbps", aliases: ["gbps", "gigabits per second"], factor: 1000 ** 3 },
+				{ label: "GB/s", aliases: ["gb/s", "gigabytes per second"], factor: 8 * 1000 ** 3 }
+			],
+			hmOutput: [
+				{ label: "Total Minutes", aliases: ["minutes", "total minutes", "min"] },
+				{ label: "Decimal Hours", aliases: ["decimal hours", "hours", "hrs"] },
+				{ label: "Total Seconds", aliases: ["seconds", "total seconds", "sec"] },
+				{ label: "Decimal Days", aliases: ["decimal days", "days"] }
+			]
+		};
+
+		function findUnit(group, label) {
+			return units[group].find(unit => unit.label === label) || units[group][0];
+		}
+
+		function createPicker(container, group, defaultLabel, onChange) {
+			const inputId = container.dataset.input;
+			container.innerHTML = `
+				<input id="${inputId}" class="unit-input" type="text" autocomplete="off" />
+				<span class="unit-arrow">▼</span>
+				<div class="unit-list" role="listbox"></div>
+			`;
+
+			const input = container.querySelector("input");
+			const list = container.querySelector(".unit-list");
+			input.value = defaultLabel;
+
+			const render = (filter = "", showAll = false) => {
+				const query = filter.trim().toLowerCase();
+				const options = units[group].filter(unit => {
+					if (showAll || !query) return true;
+					return unit.label.toLowerCase().includes(query) || unit.aliases.some(alias => alias.toLowerCase().includes(query));
+				});
+
+				list.innerHTML = options.map(unit => `<div class="unit-option" data-label="${unit.label}">${unit.label}</div>`).join("");
+				list.style.display = "block";
+			};
+
+			input.addEventListener("focus", () => render("", true));
+			input.addEventListener("click", () => render("", true));
+			input.addEventListener("input", () => render(input.value, false));
+			input.addEventListener("keydown", (event) => {
+				if (event.key === "Escape") list.style.display = "none";
+			});
+
+			list.addEventListener("mousedown", (event) => {
+				const option = event.target.closest(".unit-option");
+				if (!option) return;
+				input.value = option.dataset.label;
+				list.style.display = "none";
+				onChange();
+			});
+
+			input.addEventListener("blur", () => {
+				setTimeout(() => {
+					const selected = findUnit(group, input.value);
+					input.value = selected.label;
+					list.style.display = "none";
+					onChange();
+				}, 160);
+			});
+
+			return input;
+		}
+
+		document.addEventListener("mousedown", (event) => {
+			document.querySelectorAll(".unit-picker").forEach(picker => {
+				if (!picker.contains(event.target)) {
+					const list = picker.querySelector(".unit-list");
+					if (list) list.style.display = "none";
+				}
+			});
+		});
+
+		function setupLinearConverter(prefix, group, defaults) {
+			const valueA = document.getElementById(`${prefix}ValueA`);
+			const valueB = document.getElementById(`${prefix}ValueB`);
+			let activeSide = "A";
+
+			let unitA;
+			let unitB;
+
+			const convert = (source) => {
+				const aUnit = findUnit(group, unitA.value);
+				const bUnit = findUnit(group, unitB.value);
+
+				if (source === "A") {
+					const value = parseFloat(valueA.value);
+					valueB.value = Number.isFinite(value) ? formatNumber((value * aUnit.factor) / bUnit.factor) : "";
+				} else {
+					const value = parseFloat(valueB.value);
+					valueA.value = Number.isFinite(value) ? formatNumber((value * bUnit.factor) / aUnit.factor) : "";
+				}
+			};
+
+			unitA = createPicker(document.querySelector(`[data-input="${prefix}UnitA"]`), group, defaults[0], () => convert(activeSide));
+			unitB = createPicker(document.querySelector(`[data-input="${prefix}UnitB"]`), group, defaults[1], () => convert(activeSide));
+
+			valueA.addEventListener("input", () => {
+				activeSide = "A";
+				convert("A");
+			});
+
+			valueB.addEventListener("input", () => {
+				activeSide = "B";
+				convert("B");
+			});
+
+			convert("A");
+		}
+
+		function setupTemperatureConverter() {
+			const valueA = document.getElementById("tempValueA");
+			const valueB = document.getElementById("tempValueB");
+			let activeSide = "A";
+			let unitA;
+			let unitB;
+
+			const convert = (source) => {
+				const aUnit = findUnit("temp", unitA.value);
+				const bUnit = findUnit("temp", unitB.value);
+
+				if (source === "A") {
+					const value = parseFloat(valueA.value);
+					valueB.value = Number.isFinite(value) ? formatNumber(bUnit.fromBase(aUnit.toBase(value))) : "";
+				} else {
+					const value = parseFloat(valueB.value);
+					valueA.value = Number.isFinite(value) ? formatNumber(aUnit.fromBase(bUnit.toBase(value))) : "";
+				}
+			};
+
+			unitA = createPicker(document.querySelector('[data-input="tempUnitA"]'), "temp", "Fahrenheit", () => convert(activeSide));
+			unitB = createPicker(document.querySelector('[data-input="tempUnitB"]'), "temp", "Celsius", () => convert(activeSide));
+
+			valueA.addEventListener("input", () => {
+				activeSide = "A";
+				convert("A");
+			});
+
+			valueB.addEventListener("input", () => {
+				activeSide = "B";
+				convert("B");
+			});
+
+			convert("A");
+		}
+
+		function parseFraction(text) {
+			const clean = text.trim();
+			if (!clean) return NaN;
+
+			const mixed = clean.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+			if (mixed) {
+				const whole = parseFloat(mixed[1]);
+				const numerator = parseFloat(mixed[2]);
+				const denominator = parseFloat(mixed[3]);
+				if (denominator === 0) return NaN;
+				return whole < 0 ? whole - numerator / denominator : whole + numerator / denominator;
+			}
+
+			const frac = clean.match(/^(-?\d+)\/(\d+)$/);
+			if (frac) {
+				const numerator = parseFloat(frac[1]);
+				const denominator = parseFloat(frac[2]);
+				if (denominator === 0) return NaN;
+				return numerator / denominator;
+			}
+
+			return parseFloat(clean);
+		}
+
+		function decimalToFraction(value, maxDenominator = 64) {
+			if (!Number.isFinite(value)) return "";
+			const sign = value < 0 ? "-" : "";
+			const absValue = Math.abs(value);
+			const whole = Math.floor(absValue);
+			const fraction = absValue - whole;
+
+			let bestNumerator = 0;
+			let bestDenominator = 1;
+			let bestError = Infinity;
+
+			for (let denominator = 1; denominator <= maxDenominator; denominator++) {
+				const numerator = Math.round(fraction * denominator);
+				const error = Math.abs(fraction - numerator / denominator);
+				if (error < bestError) {
+					bestError = error;
+					bestNumerator = numerator;
+					bestDenominator = denominator;
+				}
+			}
+
+			if (bestNumerator === bestDenominator) {
+				return `${sign}${whole + 1}`;
+			}
+
+			if (bestNumerator === 0) {
+				return `${sign}${whole}`;
+			}
+
+			const gcd = (a, b) => b ? gcd(b, a % b) : a;
+			const divisor = gcd(bestNumerator, bestDenominator);
+			bestNumerator /= divisor;
+			bestDenominator /= divisor;
+
+			if (whole === 0) return `${sign}${bestNumerator}/${bestDenominator}`;
+			return `${sign}${whole} ${bestNumerator}/${bestDenominator}`;
+		}
+
+		function setupFractionDecimal() {
+			const fraction = document.getElementById("fractionInput");
+			const decimal = document.getElementById("decimalInput");
+			const error = document.getElementById("fractionError");
+
+			fraction.addEventListener("input", () => {
+				const value = parseFraction(fraction.value);
+				if (Number.isFinite(value)) {
+					decimal.value = formatNumber(value, 10);
+					error.textContent = "";
+				} else {
+					decimal.value = "";
+					error.textContent = "Enter a valid fraction or decimal.";
+				}
+			});
+
+			decimal.addEventListener("input", () => {
+				const value = parseFloat(decimal.value);
+				if (Number.isFinite(value)) {
+					fraction.value = decimalToFraction(value);
+					error.textContent = "";
+				} else {
+					fraction.value = "";
+					error.textContent = "Enter a valid decimal.";
+				}
+			});
+		}
+
+		function setupScientificNotation() {
+			const sci = document.getElementById("sciInput");
+			const full = document.getElementById("fullNumberInput");
+			const error = document.getElementById("sciError");
+
+			const parseFullNumber = (value) => {
+				const clean = value.replace(/,/g, "").trim();
+				return Number(clean);
+			};
+
+			const formatFullNumber = (value) => {
+				if (!Number.isFinite(value)) return "";
+
+				const parts = value.toString().split("e");
+				if (parts.length === 2) {
+					value = Number(value.toFixed(20));
+				}
+
+				return new Intl.NumberFormat("en-US", {
+					maximumFractionDigits: 20,
+					useGrouping: true
+				}).format(value);
+			};
+
+			const toScientific = (value) => {
+				if (!Number.isFinite(value)) return "";
+				if (value === 0) return "0";
+				return value.toExponential(10).replace(/\.?0+e/, "e");
+			};
+
+			sci.addEventListener("input", () => {
+				const value = Number(sci.value.replace(/,/g, "").trim());
+				if (Number.isFinite(value)) {
+					full.value = formatFullNumber(value);
+					error.textContent = "";
+				} else {
+					full.value = "";
+					error.textContent = "Enter a valid number or scientific notation.";
+				}
+			});
+
+			full.addEventListener("input", () => {
+				const value = parseFullNumber(full.value);
+				if (Number.isFinite(value)) {
+					sci.value = toScientific(value);
+					error.textContent = "";
+				} else {
+					sci.value = "";
+					error.textContent = "Enter a valid full number.";
+				}
+			});
+		}
+
+		function setupScale() {
+			const original = document.getElementById("scaleOriginal");
+			const newer = document.getElementById("scaleNew");
+			const percent = document.getElementById("scalePercent");
+
+			const update = () => {
+				const o = parseFloat(original.value);
+				const n = parseFloat(newer.value);
+				percent.value = Number.isFinite(o) && o !== 0 && Number.isFinite(n) ? `${formatNumber((n / o) * 100, 4)}%` : "";
+			};
+
+			original.addEventListener("input", update);
+			newer.addEventListener("input", update);
+			update();
+		}
+
+		function setupBleed() {
+			const trimWidth = document.getElementById("trimWidth");
+			const trimHeight = document.getElementById("trimHeight");
+			const bleed = document.getElementById("bleedEachSide");
+			const finalWidth = document.getElementById("finalWidth");
+			const finalHeight = document.getElementById("finalHeight");
+
+			const update = () => {
+				const w = parseFloat(trimWidth.value);
+				const h = parseFloat(trimHeight.value);
+				const b = parseFloat(bleed.value);
+				finalWidth.value = Number.isFinite(w) && Number.isFinite(b) ? formatNumber(w + (b * 2), 6) : "";
+				finalHeight.value = Number.isFinite(h) && Number.isFinite(b) ? formatNumber(h + (b * 2), 6) : "";
+			};
+
+			[trimWidth, trimHeight, bleed].forEach(input => input.addEventListener("input", update));
+			update();
+		}
+
+		function setupHoursMinutesConverter() {
+			const hours = document.getElementById("hmHours");
+			const minutes = document.getElementById("hmMinutes");
+			const outputValue = document.getElementById("hmOutputValue");
+			let activeSource = "parts";
+			let outputUnit;
+
+			const unitLabel = () => findUnit("hmOutput", outputUnit.value).label;
+
+			const totalMinutesFromOutput = () => {
+				const value = parseFloat(outputValue.value.replace(/,/g, ""));
+				if (!Number.isFinite(value)) return NaN;
+
+				const label = unitLabel();
+
+				if (label === "Decimal Hours") {
+					return value * 60;
+				}
+
+				if (label === "Total Seconds") {
+					return value / 60;
+				}
+
+				if (label === "Decimal Days") {
+					return value * 1440;
+				}
+
+				return value;
+			};
+
+			const updateOutputFromParts = () => {
+				const h = parseFloat(hours.value) || 0;
+				const m = parseFloat(minutes.value) || 0;
+				const totalMinutes = (h * 60) + m;
+				const label = unitLabel();
+
+				if (label === "Decimal Hours") {
+					outputValue.value = formatNumber(totalMinutes / 60, 6);
+				} else if (label === "Total Seconds") {
+					outputValue.value = formatNumber(totalMinutes * 60, 4);
+				} else if (label === "Decimal Days") {
+					outputValue.value = formatNumber(totalMinutes / 1440, 8);
+				} else {
+					outputValue.value = formatNumber(totalMinutes, 4);
+				}
+			};
+
+			const updatePartsFromOutput = () => {
+				const totalMinutes = totalMinutesFromOutput();
+
+				if (!Number.isFinite(totalMinutes)) {
+					hours.value = "";
+					minutes.value = "";
+					return;
+				}
+
+				const sign = totalMinutes < 0 ? -1 : 1;
+				const absTotal = Math.abs(totalMinutes);
+				const h = Math.floor(absTotal / 60);
+				const m = Math.round((absTotal - (h * 60)) * 1000000) / 1000000;
+
+				hours.value = String(h * sign);
+				minutes.value = formatNumber(m, 6);
+			};
+
+			outputUnit = createPicker(document.querySelector('[data-input="hmOutputUnit"]'), "hmOutput", "Total Minutes", () => {
+				if (activeSource === "output") {
+					updatePartsFromOutput();
+				} else {
+					updateOutputFromParts();
+				}
+			});
+
+			hours.addEventListener("input", () => {
+				activeSource = "parts";
+				updateOutputFromParts();
+			});
+
+			minutes.addEventListener("input", () => {
+				activeSource = "parts";
+				updateOutputFromParts();
+			});
+
+			outputValue.addEventListener("input", () => {
+				activeSource = "output";
+				updatePartsFromOutput();
+			});
+
+			updateOutputFromParts();
+		}
+
+		function setupRoofingPlaceholder() {
+			const squares = document.getElementById("roofSquares");
+			const bundlesPerSquare = document.getElementById("roofBundlesPerSquare");
+			const bundles = document.getElementById("roofBundles");
+
+			const update = () => {
+				const s = parseFloat(squares.value);
+				const b = parseFloat(bundlesPerSquare.value);
+				bundles.value = Number.isFinite(s) && Number.isFinite(b) ? formatNumber(s * b, 4) : "";
+			};
+
+			[squares, bundlesPerSquare].forEach(input => input.addEventListener("input", update));
+			update();
+		}
+
+		function setupTabs() {
+			const buttons = document.querySelectorAll(".tab-button");
+			const cards = document.querySelectorAll(".tool-card");
+
+			const applyTab = (tab) => {
+				cards.forEach(card => {
+					const categories = card.dataset.categories.split(" ");
+					card.classList.toggle("hidden", tab !== "all" && !categories.includes(tab));
+				});
+			};
+
+			buttons.forEach(button => {
+				button.addEventListener("click", () => {
+					const tab = button.dataset.tab;
+					buttons.forEach(btn => btn.classList.toggle("active", btn === button));
+					applyTab(tab);
+				});
+			});
+
+			const activeButton = document.querySelector(".tab-button.active") || buttons[0];
+			applyTab(activeButton.dataset.tab);
+		}
+
+		setupTabs();
+		setupFractionDecimal();
+		setupScientificNotation();
+		setupTemperatureConverter();
+		setupLinearConverter("length", "length", ["Inch", "Millimeter"]);
+		setupLinearConverter("mass", "mass", ["Pound", "Kilogram"]);
+		setupLinearConverter("volume", "volume", ["Liter", "Gallon"]);
+		setupLinearConverter("travelSpeed", "travelSpeed", ["Miles per Hour", "Kilometers per Hour"]);
+		setupLinearConverter("time", "time", ["Hour", "Minute"]);
+		setupHoursMinutesConverter();
+		setupLinearConverter("data", "data", ["Megabyte", "Kilobyte"]);
+		setupLinearConverter("networkSpeed", "networkSpeed", ["Mbps", "MB/s"]);
+		setupScale();
+		setupBleed();
+		setupRoofingPlaceholder();
+	</script>
+</body>
+</html>
