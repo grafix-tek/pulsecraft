@@ -6,6 +6,11 @@
   --border: #444f67;
   --muted: rgba(244, 246, 250, 0.72);
   --shadow: rgba(0, 0, 0, 0.28);
+  --accent: #607895;
+  --success: #8ee88e;
+  --danger: #ff8c8c;
+  --warning: #ffd166;
+  --log-bg: #111827;
   --pc-font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
@@ -31,6 +36,220 @@ body {
   color: var(--fg);
   font-family: var(--pc-font);
 }
+
+/* =========================================================
+   PulseCraft shared tool-page header
+
+   Standard header for utility pages.
+
+   Layout:
+   - Home button sits at the upper left.
+   - Tool title/subtitle are centered.
+   - Header styling is based on PDF Geometry Updater.
+   ========================================================= */
+
+.pc-tool-header {
+	position: relative;
+	text-align: center;
+	margin: 0 0 16px;
+	min-height: 42px;
+}
+
+.pc-tool-home {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.pc-tool-heading {
+	max-width: 760px;
+	margin: 0 auto;
+	padding: 0 92px;
+}
+
+.pc-tool-title {
+	margin: 0 0 3px;
+	font-size: 1.65em;
+	font-weight: 800;
+	line-height: 1.1;
+	color: var(--fg);
+}
+
+.pc-tool-subtitle {
+	margin: 0 auto;
+	color: var(--muted);
+	font-size: 13px;
+	line-height: 1.35;
+}
+
+/* =========================================================
+   PulseCraft shared tool drawer navigation
+
+   Injected by js/pulsecraft-nav.js.
+   Provides a left-edge hamburger menu for jumping between tools.
+   ========================================================= */
+
+.pc-nav-toggle {
+	position: fixed;
+	left: 0;
+	top: 92px;
+	z-index: 1201;
+	width: 38px;
+	height: 42px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	background: var(--panel);
+	color: var(--fg);
+	border: 1px solid var(--border);
+	border-left: 0;
+	border-radius: 0 10px 10px 0;
+	box-shadow: 0 6px 16px var(--shadow);
+	cursor: pointer;
+	opacity: 0.82;
+}
+
+.pc-nav-toggle:hover,
+.pc-nav-toggle:focus {
+	opacity: 1;
+	outline: none;
+}
+
+.pc-nav-toggle span {
+	display: block;
+	width: 18px;
+	height: 2px;
+	background: currentColor;
+	border-radius: 999px;
+}
+
+.pc-nav-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1199;
+	background: rgba(0, 0, 0, 0.35);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.18s ease;
+}
+
+.pc-nav-drawer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1200;
+	width: min(280px, 82vw);
+	height: 100vh;
+	background: var(--panel);
+	color: var(--fg);
+	border-right: 1px solid var(--border);
+	box-shadow: 8px 0 24px rgba(0, 0, 0, 0.32);
+	transform: translateX(-100%);
+	transition: transform 0.2s ease;
+	padding: 18px;
+	box-sizing: border-box;
+}
+body.pc-nav-open .pc-nav-overlay {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+body.pc-nav-open .pc-nav-drawer {
+	transform: translateX(0);
+}
+
+body.pc-nav-open .pc-nav-toggle {
+	display: none;
+}
+
+
+
+.pc-nav-title {
+	margin: 0 0 14px;
+	font-size: 1.05em;
+	font-weight: 800;
+	line-height: 1.2;
+	color: var(--fg);
+}
+
+.pc-nav-list {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.pc-nav-link {
+	display: block;
+	padding: 9px 10px;
+	border-radius: 8px;
+	color: var(--fg);
+	text-decoration: none;
+	border: 1px solid transparent;
+	background: transparent;
+	font-size: 14px;
+	font-weight: 650;
+	opacity: 0.82;
+}
+
+.pc-nav-link:hover,
+.pc-nav-link:focus {
+	opacity: 1;
+	background: var(--panel-alt);
+	border-color: var(--border);
+	outline: none;
+}
+
+.pc-nav-link.pc-nav-active {
+	background: var(--accent);
+	color: var(--fg);
+	border-color: var(--accent);
+	opacity: 1;
+	box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.26);
+}
+
+.pc-nav-divider {
+	height: 1px;
+	background: var(--border);
+	margin: 5px 0;
+	opacity: 0.75;
+}
+
+@media print {
+	.pc-nav-toggle,
+	.pc-nav-overlay,
+	.pc-nav-drawer {
+		display: none !important;
+	}
+}
+
+
+/* =========================================================
+   PulseCraft shared log / console readout
+
+   Used for tool feedback such as Ready, Processing, Done,
+   warnings, and errors.
+
+   This styling was standardized from PDF Geometry Updater.
+   Keep shared so tools use the same readout appearance when needed.
+   ========================================================= */
+
+.pc-log {
+  margin-top: 14px;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: var(--log-bg);
+  color: var(--success);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 64px;
+  box-shadow: 0 6px 16px var(--shadow);
+}
+
+/*   ========================================================= */
 
 .footer {
   position: fixed;
@@ -59,21 +278,22 @@ body {
 }
 
 .home-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4.25px;
-  min-width: 34px;
-  height: 34px;
-  padding: 0 10px;
-  border-radius: 8px;
-  background: var(--panel);
-  color: var(--fg);
-  border: 1px solid var(--border);
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: bold;
-  opacity: 0.75;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4.25px;
+	min-width: 34px;
+	height: 34px;
+	padding: 0 10px;
+	border-radius: 8px;
+	background: var(--panel);
+	color: var(--fg);
+	border: 1px solid var(--border);
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 1;
+	opacity: 0.75;
 }
 
 .home-button::before {
