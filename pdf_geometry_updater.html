@@ -8,10 +8,6 @@
 	<style>
 		:root {
 			--accent: #607895;
-			--success: #8ee88e;
-			--danger: #ff8c8c;
-			--warning: #ffd166;
-			--log-bg: #111827;
 		}
 
 		body {
@@ -26,14 +22,6 @@
 			max-width: 980px;
 			margin: 0 auto;
 			padding: 0 0 40px;
-		}
-
-		h1 {
-			margin: 0 0 8px;
-			font-size: 1.65em;
-			font-weight: 800;
-			line-height: 1.1;
-			color: var(--fg);
 		}
 
 		.small {
@@ -167,20 +155,6 @@
 			accent-color: var(--accent);
 		}
 
-		.log {
-			margin-top: 14px;
-			white-space: pre-wrap;
-			font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-			font-size: 12px;
-			background: var(--log-bg);
-			color: var(--success);
-			border: 1px solid var(--border);
-			padding: 12px;
-			border-radius: 12px;
-			min-height: 64px;
-			box-shadow: 0 6px 16px var(--shadow);
-		}
-
 		@media (max-width: 700px) {
 			body {
 				max-width: 92%;
@@ -207,11 +181,16 @@
 
 <body>
 	<main>
-		<h1>PDF Geometry Updater — TrimBox Setter</h1>
-		<div class="small">
-			This tool does <b>not</b> visually crop. It leaves <code>MediaBox</code> alone and only sets <code>TrimBox</code>.
-		</div>
+		<header class="pc-tool-header">
+			<a class="home-button pc-tool-home" href="index.html" title="Back to PulseCraft Utilities">Home</a>
 
+			<div class="pc-tool-heading">
+				<h1 class="pc-tool-title">PDF Geometry Updater — TrimBox Setter</h1>
+				<p class="pc-tool-subtitle">
+					This tool does <b>not</b> visually crop. It leaves <code>MediaBox</code> alone and only sets <code>TrimBox</code>.
+				</p>
+			</div>
+		</header>
 		<div id="drop" class="box">
 			<div><b>Drag &amp; drop PDFs here</b></div>
 
@@ -260,16 +239,14 @@
 			</div>
 		</div>
 
-		<div id="log" class="log" aria-live="polite"></div>
+		<div id="log" class="pc-log" aria-live="polite"></div>
 
-		<div class="home-row">
-			<a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
-		</div>
 	</main>
 
-	<footer class="footer" data-footer-type="common" data-version="4.0.0.2026"></footer>
+	<footer class="footer" data-footer-type="common" data-version="4.0.1.2026"></footer>
 
 	<script src="js/pulsecraft-footer.js"></script>
+	<script src="js/pulsecraft-nav.js"></script>
 
 	<script>
 		(() => {
@@ -500,7 +477,7 @@
 				if (!window.PDFLib) {
 					logEl.textContent = "pdf-lib did not load. Make sure js/pdf-lib.min.js exists in the PulseCraft repo.";
 				} else {
-					logEl.textContent = "Ready. Drag & drop PDFs onto the box.\n";
+					logEl.textContent = "Ready";
 				}
 			});
 		})();
