@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>PulseCraft Quick Converter</title>
+	<title>QuickCalcs</title>
 	<link rel="stylesheet" href="css/pulsecraft.css" />
 
 	<style>
@@ -22,27 +22,6 @@
 			max-width: 92%;
 			min-height: 100vh;
 			padding-bottom: 80px;
-		}
-
-		header {
-			text-align: center;
-			margin-bottom: 18px;
-		}
-
-		h1 {
-			margin: 0;
-			font-size: 1.65em;
-			font-weight: 800;
-			line-height: 1.1;
-			color: var(--fg);
-		}
-
-		.subtitle {
-			margin: 8px auto 0;
-			color: var(--muted);
-			font-size: 0.92em;
-			line-height: 1.35;
-			max-width: 760px;
 		}
 
 		.tabs {
@@ -336,10 +315,6 @@
 			padding-top: 12px;
 		}
 
-		.home-row {
-			margin-top: 24px;
-		}
-
 		@media (max-width: 600px) {
 			body {
 				max-width: 94%;
@@ -355,18 +330,23 @@
 </head>
 
 <body>
-	<header>
-		<h1>QuickCalcs</h1>
-	</header>
-
-	<nav class="tabs" aria-label="Converter categories">
-		<button class="tab-button active" type="button" data-tab="general">General</button>
-		<button class="tab-button" type="button" data-tab="prepress">Prepress</button>
-		<button class="tab-button" type="button" data-tab="construction">Construction</button>
-		<button class="tab-button" type="button" data-tab="all">All</button>
-	</nav>
-
 	<main>
+		<header class="pc-tool-header">
+			<a class="home-button pc-tool-home" href="index.html" title="Back to PulseCraft Utilities">Home</a>
+
+			<div class="pc-tool-heading">
+				<h1 class="pc-tool-title">QuickCalcs</h1>
+				<p class="pc-tool-subtitle">A collection of quick converters and small calculation tools.</p>
+			</div>
+		</header>
+
+		<nav class="tabs" aria-label="Converter categories">
+			<button class="tab-button active" type="button" data-tab="general">General</button>
+			<button class="tab-button" type="button" data-tab="prepress">Prepress</button>
+			<button class="tab-button" type="button" data-tab="construction">Construction</button>
+			<button class="tab-button" type="button" data-tab="all">All</button>
+		</nav>
+
 		<div class="tool-grid">
 
 			<section class="tool-card" data-tool="fraction" data-categories="general prepress">
@@ -724,14 +704,12 @@
 
 		</div>
 
-		<div class="home-row">
-			<a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
-		</div>
 	</main>
 
-	<footer class="footer" data-footer-type="common" data-version="1.0.0.2026"></footer>
+	<footer class="footer" data-footer-type="common" data-version="1.0.1.2026"></footer>
 
 	<script src="js/pulsecraft-footer.js"></script>
+	<script src="js/pulsecraft-nav.js"></script>
 
 	<script>
 		const formatNumber = (value, maxDecimals = 8) => {
