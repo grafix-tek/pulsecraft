@@ -10,38 +10,16 @@
 	<style>
 		body {
 			margin: 20px auto;
-			max-width: 900px;
+			max-width: 90%;
 			min-height: 100vh;
 			padding-bottom: 80px;
 		}
 
-		header {
-			text-align: center;
-			margin-bottom: 20px;
-		}
-
-		h1 {
-			margin: 0;
-			font-size: 1.65em;
-			font-weight: 800;
-			line-height: 1.1;
-			color: var(--fg);
-		}
-
-		.subtitle {
-			margin: 8px auto 0;
-			color: var(--muted);
-			font-size: 0.92em;
-			line-height: 1.35;
-			max-width: 680px;
-		}
-
-		.panel {
-			background: var(--panel);
-			border: 1px solid var(--border);
-			border-radius: 14px;
-			box-shadow: 0 6px 16px var(--shadow);
-			padding: 18px;
+		main {
+			width: 100%;
+			max-width: 980px;
+			margin: 0 auto;
+			padding: 0 0 40px;
 		}
 
 		.mode-row {
@@ -49,7 +27,8 @@
 			justify-content: center;
 			gap: 12px;
 			flex-wrap: wrap;
-			margin-bottom: 18px;
+			margin-top: 14px;
+			margin-bottom: 0;
 		}
 
 		.mode-button {
@@ -78,59 +57,35 @@
 		}
 
 		.drop-zone {
+			margin-top: 16px;
 			border: 2px dashed var(--border);
-			border-radius: 16px;
-			background: rgba(255, 255, 255, 0.04);
-			padding: 42px 22px;
+			border-radius: 12px;
+			background: var(--panel);
+			padding: 18px;
 			text-align: center;
-			cursor: pointer;
+			box-shadow: 0 6px 16px var(--shadow);
 			transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 		}
 
 		.drop-zone.dragover {
-			border-color: #8fb3d9;
-			background: rgba(143, 179, 217, 0.14);
+			border-color: #607895;
+			background: #263650;
 			transform: translateY(-1px);
 		}
 
 		.drop-main {
 			margin: 0;
 			color: var(--fg);
-			font-size: 1.15em;
-			font-weight: 800;
-			line-height: 1.35;
+			font-size: 1em;
+			font-weight: 700;
+			line-height: normal;
 		}
 
 		.drop-sub {
-			margin: 10px 0 0;
+			margin: 14px 0 0;
 			color: var(--muted);
 			font-size: 0.92em;
 			line-height: 1.4;
-		}
-
-		.file-input {
-			display: none;
-		}
-
-		.status {
-			margin-top: 14px;
-			min-height: 1.4em;
-			color: var(--muted);
-			font-size: 0.92em;
-			line-height: 1.4;
-			text-align: center;
-		}
-
-		.status.ok {
-			color: #8ddf9c;
-		}
-
-		.status.error {
-			color: #ff9f9f;
-		}
-
-		.home-row {
-			margin-top: 24px;
 		}
 
 		@media (max-width: 600px) {
@@ -150,46 +105,45 @@
 </head>
 
 <body>
-	<header>
-		<h1>PDF Page Remover</h1>
-		<p class="subtitle">Choose a removal mode, then drop a PDF. The processed PDF downloads using the original filename.</p>
-	</header>
-
 	<main>
-		<section class="panel">
+		<header class="pc-tool-header">
+			<a class="home-button pc-tool-home" href="index.html" title="Back to PulseCraft Utilities">Home</a>
+
+			<div class="pc-tool-heading">
+				<h1 class="pc-tool-title">PDF Page Remover</h1>
+				<p class="pc-tool-subtitle">
+					Choose a mode, drop a PDF. The processed PDF downloads using the original filename.
+				</p>
+			</div>
+		</header>
+		<section id="dropZone" class="drop-zone">
+			<p id="dropMain" class="drop-main">Drop PDF here to delete even pages.</p>
+
 			<div class="mode-row" aria-label="Page removal mode">
 				<button class="mode-button active" type="button" data-mode="even">- Even</button>
 				<button class="mode-button" type="button" data-mode="odd">- Odd</button>
 				<button class="mode-button" type="button" data-mode="secondThird">- 2nd &amp; 3rd</button>
 			</div>
 
-			<div id="dropZone" class="drop-zone" role="button" tabindex="0">
-				<p id="dropMain" class="drop-main">Drop PDF here to delete even pages.</p>
-				<p id="dropSub" class="drop-sub">Keeps pages 1, 3, 5, 7...</p>
-			</div>
-
-			<input id="fileInput" class="file-input" type="file" accept="application/pdf,.pdf" />
-
-			<div id="status" class="status">Ready.</div>
+			<p id="dropSub" class="drop-sub">Keeps pages 1, 3, 5, 7...</p>
 		</section>
 
-		<div class="home-row">
-			<a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
-		</div>
+		<div id="log" class="pc-log" aria-live="polite">Ready</div>
+
 	</main>
 
-	<footer class="footer" data-footer-type="common" data-version="1.0.0.2026"></footer>
+	<footer class="footer" data-footer-type="common" data-version="1.0.1.2026"></footer>
 
 	<script src="js/pdf-lib.min.js"></script>
 	<script src="js/pulsecraft-footer.js"></script>
+	<script src="js/pulsecraft-nav.js"></script>
 
 	<script>
 		const modeButtons = document.querySelectorAll(".mode-button");
 		const dropZone = document.getElementById("dropZone");
 		const dropMain = document.getElementById("dropMain");
 		const dropSub = document.getElementById("dropSub");
-		const fileInput = document.getElementById("fileInput");
-		const status = document.getElementById("status");
+		const log = document.getElementById("log");
 
 		let selectedMode = "even";
 
@@ -209,11 +163,9 @@
 		};
 
 		function setStatus(message, type = "") {
-			status.textContent = message;
-			status.className = "status";
-			if (type) {
-				status.classList.add(type);
-			}
+			log.textContent = message;
+
+			log.dataset.status = type || "ready";
 		}
 
 		function setMode(mode) {
@@ -225,7 +177,7 @@
 
 			dropMain.textContent = modeText[mode].main;
 			dropSub.textContent = modeText[mode].sub;
-			setStatus("Ready.");
+			setStatus("Ready");
 		}
 
 		function shouldKeepPage(pageIndex, mode) {
@@ -301,20 +253,6 @@
 			button.addEventListener("click", () => setMode(button.dataset.mode));
 		});
 
-		dropZone.addEventListener("click", () => fileInput.click());
-
-		dropZone.addEventListener("keydown", event => {
-			if (event.key === "Enter" || event.key === " ") {
-				event.preventDefault();
-				fileInput.click();
-			}
-		});
-
-		fileInput.addEventListener("change", () => {
-			const file = fileInput.files[0];
-			processPdf(file);
-			fileInput.value = "";
-		});
 
 		["dragenter", "dragover"].forEach(eventName => {
 			dropZone.addEventListener(eventName, event => {
