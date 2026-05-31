@@ -35,12 +35,12 @@
     overflow:hidden;
   }
 
-  header{
+  .collator-card-header{
     padding:clamp(6px, .9vw, 10px) clamp(14px, 2.2vw, 24px) clamp(2px, .4vw, 4px);
     background:var(--collcalc-panel);
   }
 
-  h1{
+  .collator-card-title{
     margin:0;
     font-size:clamp(19px, 2.4vw, 24px);
     letter-spacing:.2px;
@@ -48,7 +48,7 @@
   }
 
   .main{
-    padding:clamp(4px, .8vw, 8px) clamp(14px, 2.2vw, 24px) clamp(12px, 1.8vw, 20px);
+    padding:clamp(18px, 2.2vw, 28px) clamp(14px, 2.2vw, 24px) clamp(18px, 2.2vw, 28px);
   }
 
   .controls{
@@ -268,9 +268,9 @@
 
   @media (max-height:760px){
     .wrap{margin:4px auto}
-    header{padding:5px 16px 2px}
+    .collator-card-header{padding:5px 16px 2px}
     .main{padding:4px 16px 9px}
-    h1{font-size:19px}
+    .collator-card-title{font-size:19px}
     .small{font-size:10px;line-height:1.15;margin-top:5px}
     input{padding:6px 10px;font-size:18px}
     button{padding:6px 11px;font-size:12px}
@@ -287,17 +287,25 @@
     body{background:#fff;color:#000}
     .wrap{margin:0;max-width:none}
     .card{box-shadow:none;border:0;background:#fff;color:#000}
-    header{background:#fff;color:#000;border-bottom:1px solid #000}
-    h1,.small{color:#000}
+    .collator-card-header{background:#fff;color:#000;border-bottom:1px solid #000}
+    .collator-card-title,.small{color:#000}
     .main{padding:18px}
-    button,.home-row,.footer{display:none}
+    button,.pc-tool-home,.footer{display:none}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
+  <header class="pc-tool-header">
+    <a class="home-button pc-tool-home" href="index.html" title="Back to PulseCraft Utilities">Home</a>
+
+    <div class="pc-tool-heading">
+      <h1 class="pc-tool-title">Collator Calculator</h1>
+      <p class="pc-tool-subtitle">Calculate collator bar positions from a UPC or 5-digit collator number.</p>
+    </div>
+  </header>
+
   <div class="card">
-    <header><h1>Collator Calculator</h1></header>
     <div class="main">
       <section>
         <div class="controls">
@@ -341,11 +349,7 @@
       </section>
     </div>
   </div>
-
-  <div class="home-row">
-    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
-  </div>
-</div>
+</main>
 
 <script>
 const positionWeightsA=[512,256,128,64,32,16,8,4,2,1];
@@ -450,9 +454,10 @@ window.addEventListener('load',()=>{
 });
 </script>
 
-<footer class="footer" data-footer-type="collator" data-version="4.0.0.2026"></footer>
+<footer class="footer" data-footer-type="collator" data-version="4.0.1.2026"></footer>
 
 <script src="js/pulsecraft-footer.js"></script>
+<script src="js/pulsecraft-nav.js"></script>
 
 </body>
 </html>
