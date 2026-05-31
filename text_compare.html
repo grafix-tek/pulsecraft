@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Text Compare Tool</title>
+  <title>Text Compare</title>
   <link rel="stylesheet" href="css/pulsecraft.css" />
   <style>
     :root {
@@ -21,7 +21,7 @@
       --highlight-char: #c62828;
 
       /* Shared font size for all text boxes */
-      --text-size: 1em;
+      --text-size: 0.8em;
     }
     [data-theme="dark"] {
       --box-bg: #222d44;
@@ -43,39 +43,30 @@
       min-width: 500px;
       transition: background 0.2s, color 0.2s;
       padding-bottom: 70px;
-      transition: background 0.2s, color 0.2s;
     }
+
     body, h1, h2, h3, h4, h5, h6, label, .toggle-label, .case-label {
       color: var(--fg);
     }
 
-    /* Title inline with Theme toggle */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom: 12px;
-    }
-    .app-title{
-      margin: 0;
-      font-weight: 800;
-      font-size: 1.65em;
-      line-height: 1.1;
-      white-space: nowrap
-    }
-    .topbar-right{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap: wrap;
-    }
-    .theme-name{
-      margin-left: 0;
-    }
+	.theme-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: nowrap;
+		margin: 0;
+		white-space: nowrap;
+	}
+
+	.pc-tool-theme {
+		position: absolute;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
 
     .toggle-label {
-      margin-right: 10px;
       font-weight: bold;
     }
     .toggle-switch {
@@ -128,28 +119,47 @@
       flex: 1 1 0;
       min-width: 0;
     }
-    label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    textarea, .diffbox {
-      width: 100%;
-      min-height: 350px;
-      border: 1px solid var(--box-border);
-      background: var(--box-bg);
-      color: var(--box-fg);
-      border-radius: 5px;
-      padding: 10px;
-      font-family: monospace;
+	
+	.paste-option input[type="checkbox"] {
+		margin: 0;
+		transform: translateY(1.5px);
+	}
+	
+	.paste-option {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: 6px;
+		font-size: 13px;
+		font-weight: normal;
+		color: var(--muted);
+		user-select: none;
+	}
+	
+	textarea, .diffbox {
+		width: 100%;
+		min-height: 90px;
+		border: 1px solid var(--box-border);
+		background: var(--box-bg);
+		color: var(--box-fg);
+		border-radius: 5px;
+		padding: 10px;
+		font-family: "Courier New", Courier, monospace;
+		font-size: var(--text-size);
+		white-space: pre-wrap;
+		overflow-wrap: break-word;
+		box-sizing: border-box;
+	}
 
-      /* uses shared font size */
-      font-size: var(--text-size);
+	textarea {
+		overflow-y: hidden;
+		resize: vertical;
+	}
 
-      resize: vertical;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-      box-sizing: border-box;
-    }
+	.diffbox {
+		overflow-y: visible;
+	}	
+	
     .diffbox i {
       color: gray;
     }
@@ -162,27 +172,6 @@
       text-align: center;
       border-radius: 5px;
       font-size: 1.2em;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: flex-start; /* since Reset moved up */
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-      width: 100%;
-    }
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-weight: normal;
     }
 
     .case-row {
@@ -204,29 +193,29 @@
       align-items: center;
     }
     .case-btn {
-      padding: 10px 32px;
-      font-size: 1.15em;
+      padding: 8px 26px;
+      font-size: 0.92em;
       border: 2px solid var(--case-btn-border);
       background: var(--case-btn-bg);
       color: var(--case-btn-fg);
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 500;
-      transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.12s;
+      font-weight: bold;
+      transition: background 0.18s, color 0.18s, box-shadow 0.12s;
       outline: none;
     }
-    .case-btn.active {
+    .case-btn.active,
+    .case-btn.toggle-active {
       background: var(--case-btn-bg-active) !important;
       color: var(--case-btn-fg-active) !important;
-      border: 2.5px solid #1976d2;
+      border-color: #1976d2;
       box-shadow: 0 2px 12px 0 rgba(30,80,200,0.14);
-      font-weight: bold;
     }
 
     /* Font +/- buttons and readout */
     .font-btn {
-      padding: 10px 18px;
-      min-width: 64px;
+      padding: 8px 14px;
+      min-width: 52px;
       text-align: center;
     }
     .font-readout {
@@ -235,19 +224,26 @@
       white-space: nowrap;
     }
 
-    /* NEW: Reset button sits at far right of the case-row */
-    .reset-btn{
-      margin-left: auto; /* pushes it to the right */
+    .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: auto;
+    }
+
+    /* Reset button sits with Clean Text at far right of the case-row */
+    .reset-btn {
       background-color: #ccc !important;
       color: #111 !important;
-      border: none !important;
-      padding: 10px 20px !important;
-      font-size: 1em !important;
-      border-radius: 8px !important;
+      border: 2px solid #ccc !important;
+      padding: 8px 16px !important;
+      font-size: 0.9em !important;
+      border-radius: 7px !important;
       font-weight: bold !important;
     }
-    .reset-btn:hover{
+    .reset-btn:hover {
       background-color: #999 !important;
+      border-color: #999 !important;
       color: #fff !important;
     }
 
@@ -284,18 +280,91 @@
       transform: translateY(-2px) scale(1.04);
     }
 
-    ins, del {
-      background: var(--highlight-word) !important;
-      color: #fff !important;
-      text-decoration: none;
-      border-radius: 2px;
-      padding: 1px 2px;
-    }
+	ins, del, .case-mismatch {
+		display: inline-block;
+		width: 1ch;
+		color: #fff !important;
+		text-decoration: none;
+		border-radius: 2px;
+		padding: 0;
+		text-align: center;
+	}
+
+	ins, del {
+		background: var(--highlight-word) !important;
+	}
+
+	.case-mismatch {
+		background: #42f548 !important;
+		color: #111 !important;
+	}
+	
     [data-theme="dark"] ins,
     [data-theme="dark"] del {
       background: #fff !important;
       color: #000 !important;
-    }
+      }
+
+	.missing-marker {
+		display: inline-block;
+		width: 1ch;
+		height: 1.2em;
+		line-height: 1.2em;
+		margin: 0;
+		vertical-align: .05em;
+		background: red;
+		color: #fff !important;
+		font-size: 0.9em;
+		font-weight: bold;
+		border-radius: 2px;
+		text-align: center;
+	}
+
+
+
+	.diff-key {
+		margin: -8px 0 22px;
+		padding: 10px 12px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--panel-alt);
+		color: var(--fg);
+		font-size: 13px;
+		line-height: 1.35;
+	}
+
+	.diff-key-title {
+		font-weight: bold;
+		margin-bottom: 6px;
+	}
+
+	.diff-key-items {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 18px;
+		align-items: center;
+	}
+
+	.diff-key-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		white-space: nowrap;
+	}
+
+	.diff-key-sample {
+		font-family: "Courier New", Courier, monospace;
+		font-size: var(--text-size);
+	}
+
+	[data-theme="light"] .diff-key-dark {
+		display: none;
+	}
+
+	[data-theme="dark"] .diff-key-light {
+		display: none;
+	}
+
     h3 {
       margin-top: 30px;
       margin-bottom: 12px;
@@ -305,40 +374,54 @@
 </head>
 
 <body data-theme="light">
-  <!-- Title inline with Theme toggle -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <h1 class="app-title">Text Compare Tool</h1>
-    </div>
+  <main>
+  
+<header class="pc-tool-header">
+	<a class="home-button pc-tool-home" href="index.html" title="Back to PulseCraft Utilities">Home</a>
 
-    <div class="topbar-right">
-      <span class="toggle-label">Theme:</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="darkToggle" onchange="toggleTheme()" />
-        <span class="slider"></span>
-      </label>
-      <span id="themeName" class="theme-name">Regular Mode</span>
-    </div>
-  </div>
+	<div class="pc-tool-heading">
+		<h1 class="pc-tool-title">Text Compare</h1>
+		<p class="pc-tool-subtitle">Compare two blocks of text and highlight the differences.</p>
+	</div>
 
-  <div class="flex-row">
-    <div class="box">
-      <label for="text1">Text 1</label>
-      <textarea id="text1" placeholder="Enter or paste first text here..."></textarea>
-    </div>
-    <div class="box">
-      <label for="text2">Text 2</label>
-      <textarea id="text2" placeholder="Enter or paste second text here..."></textarea>
-    </div>
-  </div>
+	<div class="theme-row pc-tool-theme">
+		<span class="toggle-label">Theme:</span>
+		<label class="toggle-switch">
+			<input type="checkbox" id="darkToggle" onchange="toggleTheme()" />
+			<span class="slider"></span>
+		</label>
+		<span id="themeName" class="theme-name">Regular Mode</span>
+	</div>
+</header>
+
+
+	<div class="flex-row">
+		<div class="box">
+			<textarea id="text1" placeholder="Enter or paste first text here..."></textarea>
+
+			<label class="paste-option" title="Adds 3 blank lines before pasted text in this box">
+				<input type="checkbox" id="stackPaste1" />
+				Stack3 Paste
+			</label>
+		</div>
+
+		<div class="box">
+			<textarea id="text2" placeholder="Enter or paste second text here..."></textarea>
+
+			<label class="paste-option" title="Adds 3 blank lines before pasted text in this box">
+				<input type="checkbox" id="stackPaste2" />
+				Stack3 Paste
+			</label>
+		</div>
+	</div>
 
   <!-- CASE + FONT SIZE + RESET (single row) -->
   <div class="case-row">
-    <span class="case-label">Case normalization:</span>
+    <span class="case-label">Case:</span>
     <div class="case-btn-group">
-      <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">No Change</button>
-      <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">Lowercase</button>
-      <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">Uppercase</button>
+      <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">Default</button>
+      <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">abc</button>
+      <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">ABC</button>
     </div>
     <input type="hidden" id="caseOption" value="none" />
 
@@ -350,16 +433,11 @@
     </div>
     <input type="hidden" id="fontScale" value="1" />
 
-    <!-- NEW: Reset button, right-justified within this row -->
-    <button type="button" class="reset-btn" onclick="clearAll()">Reset</button>
-  </div>
+    <input type="hidden" id="collapseSpaces" value="true" />
 
-  <div class="controls">
-    <div class="checkbox-group">
-      <label>
-        <input type="checkbox" id="collapseSpaces" checked />
-        Remove extra white space
-      </label>
+    <div class="right-controls">
+      <button type="button" class="case-btn toggle-active" id="cleanTextBtn" onclick="toggleCleanText()">Clean Text</button>
+      <button type="button" class="reset-btn" onclick="clearAll()">Reset</button>
     </div>
   </div>
 
@@ -377,8 +455,26 @@
     </div>
   </div>
 
-  <div class="home-row">
-    <a class="home-button" href="index.html" title="Back to PulseCraft Utilities">Home</a>
+
+
+  <div class="diff-key diff-key-light" aria-label="Regular mode difference key">
+    <div class="diff-key-title">Regular Mode Key</div>
+    <div class="diff-key-items">
+      <span class="diff-key-item"><span class="diff-key-sample"><ins>X</ins></span> Blue = mismatched character</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">?</span></span> Red ? = character missing here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">X</span></span> Red character = extra character here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="case-mismatch">X</span></span> Green = case mismatch only</span>
+    </div>
+  </div>
+
+  <div class="diff-key diff-key-dark" aria-label="Dark mode difference key">
+    <div class="diff-key-title">Dark Mode Key</div>
+    <div class="diff-key-items">
+      <span class="diff-key-item"><span class="diff-key-sample"><ins>X</ins></span> White = mismatched character</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">?</span></span> Red ? = character missing here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">X</span></span> Red character = extra character here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="case-mismatch">X</span></span> Green = case mismatch only</span>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
@@ -393,7 +489,7 @@
     // Font scaling (shared across textarea + diff boxes)
     function applyFontScale(scale) {
       document.getElementById('fontScale').value = scale.toFixed(2);
-      document.documentElement.style.setProperty('--text-size', scale + 'em');
+      document.documentElement.style.setProperty('--text-size', (scale * 0.8) + 'em');
       document.getElementById('fontReadout').innerText = Math.round(scale * 100) + '%';
       localStorage.setItem('compare-fontScale', scale.toFixed(2));
     }
@@ -412,6 +508,40 @@
       applyFontScale(scale);
     }
 
+	function autoSizeTextarea(el) {
+		el.style.height = "auto";
+		el.style.height = el.scrollHeight + "px";
+	}
+
+	function insertTextAtCursor(textarea, text) {
+		const start = textarea.selectionStart;
+		const end = textarea.selectionEnd;
+		const before = textarea.value.substring(0, start);
+		const after = textarea.value.substring(end);
+
+		textarea.value = before + text + after;
+		textarea.selectionStart = textarea.selectionEnd = start + text.length;
+	}
+
+	function handleStackPaste(event, textareaId, checkboxId) {
+		const checkbox = document.getElementById(checkboxId);
+
+		if (!checkbox || !checkbox.checked) {
+			return;
+		}
+
+		event.preventDefault();
+
+		const textarea = document.getElementById(textareaId);
+		const pastedText = event.clipboardData.getData("text");
+		const insertText = "\n\n\n" + pastedText;
+
+		insertTextAtCursor(textarea, insertText);
+		autoSizeTextarea(textarea);
+		runCompare();
+	}
+
+
     window.addEventListener("DOMContentLoaded", function () {
       const savedTheme = localStorage.getItem("compare-theme");
       if (savedTheme === "dark") {
@@ -427,13 +557,61 @@
         applyFontScale(1.0);
       }
 
-      // Live compare on text input
-      document.getElementById("text1").addEventListener("input", runCompare);
-      document.getElementById("text2").addEventListener("input", runCompare);
+      updatePlaceholderText();
 
-      // Live compare on whitespace change
-      document.getElementById("collapseSpaces").addEventListener("change", runCompare);
+	// Live compare on text input + auto-grow textareas
+	["text1", "text2"].forEach(id => {
+		const el = document.getElementById(id);
+
+		el.addEventListener("input", function () {
+			autoSizeTextarea(el);
+			runCompare();
+		});
+
+		autoSizeTextarea(el);
+	});
+
+
+	// Restore stack paste settings
+	["1", "2"].forEach(num => {
+		const checkbox = document.getElementById("stackPaste" + num);
+		const textarea = document.getElementById("text" + num);
+		const storageKey = "compare-stackPaste" + num;
+
+		if (localStorage.getItem(storageKey) === "true") {
+			checkbox.checked = true;
+		}
+
+		checkbox.addEventListener("change", function () {
+			localStorage.setItem(storageKey, checkbox.checked ? "true" : "false");
+		});
+
+		textarea.addEventListener("paste", function (event) {
+			handleStackPaste(event, "text" + num, "stackPaste" + num);
+		});
+	});
+
     });
+
+
+    function applyCaseToDisplayText(text) {
+      const caseOption = document.getElementById("caseOption").value;
+
+      if (caseOption === "lower") return text.toLowerCase();
+      if (caseOption === "upper") return text.toUpperCase();
+      return text;
+    }
+
+    function noDifferencesHTML() {
+      return `<i>${applyCaseToDisplayText("No differences")}</i>`;
+    }
+
+    function updatePlaceholderText() {
+      document.getElementById("text1").placeholder =
+        applyCaseToDisplayText("Enter or paste first text here...");
+      document.getElementById("text2").placeholder =
+        applyCaseToDisplayText("Enter or paste second text here...");
+    }
 
     // CASE BUTTONS LOGIC
     function setCase(val) {
@@ -444,6 +622,19 @@
       if (val === 'none') document.getElementById('caseNone').classList.add('active');
       if (val === 'lower') document.getElementById('caseLower').classList.add('active');
       if (val === 'upper') document.getElementById('caseUpper').classList.add('active');
+
+      updatePlaceholderText();
+      runCompare();
+    }
+
+    function toggleCleanText() {
+      const cleanInput = document.getElementById("collapseSpaces");
+      const cleanBtn = document.getElementById("cleanTextBtn");
+      const isActive = cleanInput.value === "true";
+
+      cleanInput.value = isActive ? "false" : "true";
+      cleanBtn.classList.toggle("toggle-active", !isActive);
+
       runCompare();
     }
 
@@ -461,15 +652,70 @@
       return text;
     }
 
+	function missingMarkers(text) {
+		return Array.from(text).map(() =>
+			`<span class="missing-marker" title="Red ? = character missing here">?</span>`
+		).join("");
+	}
+
+	function missingSourceChars(text) {
+		return Array.from(text).map(char =>
+			`<span class="missing-marker" title="Red character = extra character here">${escapeHTML(char)}</span>`
+		).join("");
+	}
+	
+	function highlightedChars(text, tagName) {
+		return Array.from(text).map(char =>
+			`<${tagName} title="Blue = mismatched character">${escapeHTML(char)}</${tagName}>`
+		).join("");
+	}
+
+	function caseMismatchChars(text) {
+		return Array.from(text).map(char =>
+			`<span class="case-mismatch" title="Green = case mismatch only">${escapeHTML(char)}</span>`
+		).join("");
+	}
+
+	function renderChangedPair(leftText, rightText) {
+		const leftChars = Array.from(leftText);
+		const rightChars = Array.from(rightText);
+		const maxLen = Math.max(leftChars.length, rightChars.length);
+		let leftOut = "";
+		let rightOut = "";
+
+		for (let i = 0; i < maxLen; i++) {
+			const leftChar = leftChars[i];
+			const rightChar = rightChars[i];
+
+			if (leftChar === undefined) {
+				leftOut += missingMarkers(rightChar);
+				rightOut += missingSourceChars(rightChar);
+			} else if (rightChar === undefined) {
+				leftOut += missingSourceChars(leftChar);
+				rightOut += missingMarkers(leftChar);
+			} else if (leftChar !== rightChar && leftChar.toLowerCase() === rightChar.toLowerCase()) {
+				leftOut += caseMismatchChars(leftChar);
+				rightOut += caseMismatchChars(rightChar);
+			} else {
+				leftOut += highlightedChars(leftChar, "del");
+				rightOut += highlightedChars(rightChar, "ins");
+			}
+		}
+
+		return { leftOut, rightOut };
+	}
+
+
+
     function runCompare() {
       const t1 = document.getElementById("text1").value;
       const t2 = document.getElementById("text2").value;
       const caseOption = document.getElementById("caseOption").value;
-      const collapseSpaces = document.getElementById("collapseSpaces").checked;
+      const collapseSpaces = document.getElementById("collapseSpaces").value === "true";
 
       if (!t1 && !t2) {
-        document.getElementById("diff1").innerHTML = "<i>No differences</i>";
-        document.getElementById("diff2").innerHTML = "<i>No differences</i>";
+        document.getElementById("diff1").innerHTML = noDifferencesHTML();
+        document.getElementById("diff2").innerHTML = noDifferencesHTML();
         return;
       }
 
@@ -479,16 +725,32 @@
       const diff = window.Diff.diffChars(norm1, norm2);
 
       let out1 = "", out2 = "";
-      diff.forEach(part => {
-        if (part.added) {
-          out2 += `<ins>${escapeHTML(part.value)}</ins>`;
+      for (let i = 0; i < diff.length; i++) {
+        const part = diff[i];
+        const nextPart = diff[i + 1];
+
+        if (part.removed && nextPart && nextPart.added) {
+          const rendered = renderChangedPair(part.value, nextPart.value);
+          out1 += rendered.leftOut;
+          out2 += rendered.rightOut;
+          i++;
+        } else if (part.added && nextPart && nextPart.removed) {
+          const rendered = renderChangedPair(nextPart.value, part.value);
+          out1 += rendered.leftOut;
+          out2 += rendered.rightOut;
+          i++;
+        } else if (part.added) {
+          out1 += missingMarkers(part.value);
+          out2 += missingSourceChars(part.value);
         } else if (part.removed) {
-          out1 += `<del>${escapeHTML(part.value)}</del>`;
+          out1 += missingSourceChars(part.value);
+          out2 += missingMarkers(part.value);
         } else {
           out1 += escapeHTML(part.value);
           out2 += escapeHTML(part.value);
         }
-      });
+      }
+
 
       if (
         norm1 === norm2 &&
@@ -498,23 +760,35 @@
         document.getElementById("diff1").innerHTML = identicalMsg;
         document.getElementById("diff2").innerHTML = identicalMsg;
       } else {
-        document.getElementById("diff1").innerHTML = out1 || "<i>No differences</i>";
-        document.getElementById("diff2").innerHTML = out2 || "<i>No differences</i>";
+        document.getElementById("diff1").innerHTML = out1 || noDifferencesHTML();
+        document.getElementById("diff2").innerHTML = out2 || noDifferencesHTML();
       }
     }
 
-    function clearAll() {
-      document.getElementById("text1").value = "";
-      document.getElementById("text2").value = "";
-      document.getElementById("diff1").innerHTML = "<i>No differences</i>";
-      document.getElementById("diff2").innerHTML = "<i>No differences</i>";
-      setCase('none');
-    }
+function clearAll() {
+	const text1 = document.getElementById("text1");
+	const text2 = document.getElementById("text2");
+
+	text1.value = "";
+	text2.value = "";
+
+	autoSizeTextarea(text1);
+	autoSizeTextarea(text2);
+
+	document.getElementById("diff1").innerHTML = noDifferencesHTML();
+	document.getElementById("diff2").innerHTML = noDifferencesHTML();
+
+	setCase('none');
+}
+
   </script>
 
-  <footer class="footer" data-footer-type="common" data-version="4.4.0.2026"></footer>
+  </main>
+
+  <footer class="footer" data-footer-type="common" data-version="4.4.1.2026"></footer>
 
   <script src="js/pulsecraft-footer.js"></script>
+  <script src="js/pulsecraft-nav.js"></script>
 
 </body>
 </html>
