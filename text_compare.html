@@ -212,6 +212,38 @@
       box-shadow: 0 2px 12px 0 rgba(30,80,200,0.14);
     }
 
+    .case-btn.compare-needs-click {
+      animation: comparePulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes comparePulse {
+      0%, 100% {
+        background: var(--case-btn-bg);
+        color: var(--case-btn-fg);
+        box-shadow: none;
+      }
+      50% {
+        background: var(--success-bg);
+        color: var(--success-fg);
+        box-shadow: 0 0 14px rgba(33, 182, 123, 0.55);
+      }
+    }
+
+
+    .floating-compare-btn {
+      position: fixed;
+      right: 22px;
+      bottom: 58px;
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-compare-btn.is-visible {
+      display: inline-flex;
+    }
+
     /* Font +/- buttons and readout */
     .font-btn {
       padding: 8px 14px;
@@ -381,7 +413,7 @@
 
 	<div class="pc-tool-heading">
 		<h1 class="pc-tool-title">Text Compare</h1>
-		<p class="pc-tool-subtitle">Compare two blocks of text and highlight the differences.</p>
+		<p class="pc-tool-subtitle">Text Compare auto-runs under 6,000 characters; larger text waits until you press Compare.</p>
 	</div>
 
 	<div class="theme-row pc-tool-theme">
@@ -436,16 +468,13 @@
     <input type="hidden" id="collapseSpaces" value="true" />
 
     <div class="right-controls">
+      <button type="button" class="case-btn" id="manualCompareBtn" onclick="runManualCompare()">Compare</button>
       <button type="button" class="case-btn toggle-active" id="cleanTextBtn" onclick="toggleCleanText()">Clean Text</button>
       <button type="button" class="reset-btn" onclick="clearAll()">Reset</button>
     </div>
   </div>
 
-  <div class="button-row" style="display:none;">
-    <button class="compare-btn" onclick="runCompare()">Compare</button>
-  </div>
-
-  <h3>Differences (highlighted):</h3>
+  <h3 id="differencesHeading">Differences (highlighted):</h3>
   <div class="flex-row">
     <div class="box">
       <div class="diffbox" id="diff1"><i>No differences</i></div>
@@ -461,7 +490,7 @@
     <div class="diff-key-title">Regular Mode Key</div>
     <div class="diff-key-items">
       <span class="diff-key-item"><span class="diff-key-sample"><ins>X</ins></span> Blue = mismatched character</span>
-      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">?</span></span> Red ? = character missing here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">◊</span></span> Red ◊ = character missing here</span>
       <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">X</span></span> Red character = extra character here</span>
       <span class="diff-key-item"><span class="diff-key-sample"><span class="case-mismatch">X</span></span> Green = case mismatch only</span>
     </div>
@@ -471,14 +500,144 @@
     <div class="diff-key-title">Dark Mode Key</div>
     <div class="diff-key-items">
       <span class="diff-key-item"><span class="diff-key-sample"><ins>X</ins></span> White = mismatched character</span>
-      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">?</span></span> Red ? = character missing here</span>
+      <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">◊</span></span> Red ◊ = character missing here</span>
       <span class="diff-key-item"><span class="diff-key-sample"><span class="missing-marker">X</span></span> Red character = extra character here</span>
       <span class="diff-key-item"><span class="diff-key-sample"><span class="case-mismatch">X</span></span> Green = case mismatch only</span>
     </div>
   </div>
 
+  <div id="compareLog" class="pc-log" aria-live="polite">Ready</div>
+
+  <button type="button" class="case-btn floating-compare-btn" id="floatingCompareBtn" onclick="runManualCompare()" aria-label="Compare large text">Compare</button>
+
+
   <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
   <script>
+    const LIVE_COMPARE_LIMIT = 6000;
+    const LIVE_COMPARE_DELAY = 1000;
+    let compareTimer = null;
+    let compareNeedsManualRun = false;
+    let mainCompareButtonVisible = true;
+
+    function getCombinedTextLength() {
+      return (
+        document.getElementById("text1").value.length +
+        document.getElementById("text2").value.length
+      );
+    }
+
+    function bothSidesHaveText() {
+      return (
+        document.getElementById("text1").value.trim().length > 0 &&
+        document.getElementById("text2").value.trim().length > 0
+      );
+    }
+
+    function manualCompareShouldBePrompted() {
+      return getCombinedTextLength() > LIVE_COMPARE_LIMIT && bothSidesHaveText();
+    }
+
+    function setCompareLog(message) {
+      const log = document.getElementById("compareLog");
+      if (log) log.textContent = message;
+    }
+
+    function setCompareButtonPulse(isActive) {
+      const compareBtn = document.getElementById("manualCompareBtn");
+      const floatingBtn = document.getElementById("floatingCompareBtn");
+
+      if (compareBtn) compareBtn.classList.toggle("compare-needs-click", isActive);
+      if (floatingBtn) floatingBtn.classList.toggle("compare-needs-click", isActive);
+    }
+
+    function setManualCompareNeeded(isNeeded) {
+      compareNeedsManualRun = isNeeded;
+      setCompareButtonPulse(isNeeded);
+      updateFloatingCompareButton();
+    }
+
+    function updateFloatingCompareButton() {
+      const floatingBtn = document.getElementById("floatingCompareBtn");
+      if (!floatingBtn) return;
+
+      const shouldShow = compareNeedsManualRun && !mainCompareButtonVisible;
+      floatingBtn.classList.toggle("is-visible", shouldShow);
+    }
+
+    function updateMainCompareVisibility() {
+      const compareBtn = document.getElementById("manualCompareBtn");
+      if (!compareBtn) return;
+
+      const rect = compareBtn.getBoundingClientRect();
+      mainCompareButtonVisible = (
+        rect.bottom > 0 &&
+        rect.top < window.innerHeight &&
+        rect.right > 0 &&
+        rect.left < window.innerWidth
+      );
+
+      updateFloatingCompareButton();
+    }
+
+    function initCompareVisibilityWatcher() {
+      const compareBtn = document.getElementById("manualCompareBtn");
+      if (!compareBtn) return;
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(entries => {
+          mainCompareButtonVisible = entries[0].isIntersecting;
+          updateFloatingCompareButton();
+        }, { threshold: 0.1 });
+
+        observer.observe(compareBtn);
+      } else {
+        window.addEventListener("scroll", updateMainCompareVisibility, true);
+        window.addEventListener("resize", updateMainCompareVisibility);
+        updateMainCompareVisibility();
+      }
+    }
+
+    function scrollToDifferences() {
+      const target = document.getElementById("differencesHeading");
+      if (!target) return;
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function scheduleCompare() {
+      clearTimeout(compareTimer);
+
+      if (getCombinedTextLength() > LIVE_COMPARE_LIMIT) {
+        if (bothSidesHaveText()) {
+          setCompareLog("Large text detected — live compare paused. Click Compare.");
+          setManualCompareNeeded(true);
+        } else {
+          setCompareLog("Large text detected — add text to both sides to compare.");
+          setManualCompareNeeded(false);
+        }
+        return;
+      }
+
+      setManualCompareNeeded(false);
+
+      compareTimer = setTimeout(() => {
+        runCompare(false);
+      }, LIVE_COMPARE_DELAY);
+    }
+
+    function runManualCompare() {
+      clearTimeout(compareTimer);
+      setManualCompareNeeded(false);
+      setCompareLog("Comparing...");
+
+      setTimeout(() => {
+        runCompare(true);
+      }, 50);
+    }
+
     function toggleTheme() {
       const isDark = document.getElementById("darkToggle").checked;
       document.body.setAttribute("data-theme", isDark ? "dark" : "light");
@@ -538,7 +697,7 @@
 
 		insertTextAtCursor(textarea, insertText);
 		autoSizeTextarea(textarea);
-		runCompare();
+		scheduleCompare();
 	}
 
 
@@ -558,6 +717,7 @@
       }
 
       updatePlaceholderText();
+      initCompareVisibilityWatcher();
 
 	// Live compare on text input + auto-grow textareas
 	["text1", "text2"].forEach(id => {
@@ -565,7 +725,7 @@
 
 		el.addEventListener("input", function () {
 			autoSizeTextarea(el);
-			runCompare();
+			scheduleCompare();
 		});
 
 		autoSizeTextarea(el);
@@ -614,18 +774,21 @@
     }
 
     // CASE BUTTONS LOGIC
-    function setCase(val) {
-      document.getElementById('caseOption').value = val;
-      ['caseNone', 'caseLower', 'caseUpper'].forEach(id =>
-        document.getElementById(id).classList.remove('active')
-      );
-      if (val === 'none') document.getElementById('caseNone').classList.add('active');
-      if (val === 'lower') document.getElementById('caseLower').classList.add('active');
-      if (val === 'upper') document.getElementById('caseUpper').classList.add('active');
+	function setCase(val, scheduleAfterChange = true) {
+	  document.getElementById('caseOption').value = val;
+	  ['caseNone', 'caseLower', 'caseUpper'].forEach(id =>
+		document.getElementById(id).classList.remove('active')
+	  );
+	  if (val === 'none') document.getElementById('caseNone').classList.add('active');
+	  if (val === 'lower') document.getElementById('caseLower').classList.add('active');
+	  if (val === 'upper') document.getElementById('caseUpper').classList.add('active');
 
-      updatePlaceholderText();
-      runCompare();
-    }
+	  updatePlaceholderText();
+
+	  if (scheduleAfterChange) {
+		scheduleCompare();
+	  }
+	}
 
     function toggleCleanText() {
       const cleanInput = document.getElementById("collapseSpaces");
@@ -635,7 +798,7 @@
       cleanInput.value = isActive ? "false" : "true";
       cleanBtn.classList.toggle("toggle-active", !isActive);
 
-      runCompare();
+      scheduleCompare();
     }
 
     function escapeHTML(text) {
@@ -654,7 +817,7 @@
 
 	function missingMarkers(text) {
 		return Array.from(text).map(() =>
-			`<span class="missing-marker" title="Red ? = character missing here">?</span>`
+			`<span class="missing-marker" title="Red ◊ = character missing here">◊</span>`
 		).join("");
 	}
 
@@ -707,7 +870,20 @@
 
 
 
-    function runCompare() {
+    function runCompare(manualRun = false) {
+      if (!manualRun && getCombinedTextLength() > LIVE_COMPARE_LIMIT) {
+        if (bothSidesHaveText()) {
+          setCompareLog("Large text detected — live compare paused. Click Compare.");
+          setManualCompareNeeded(true);
+        } else {
+          setCompareLog("Large text detected — add text to both sides to compare.");
+          setManualCompareNeeded(false);
+        }
+        return;
+      }
+
+      setManualCompareNeeded(false);
+
       const t1 = document.getElementById("text1").value;
       const t2 = document.getElementById("text2").value;
       const caseOption = document.getElementById("caseOption").value;
@@ -716,6 +892,7 @@
       if (!t1 && !t2) {
         document.getElementById("diff1").innerHTML = noDifferencesHTML();
         document.getElementById("diff2").innerHTML = noDifferencesHTML();
+        setCompareLog("Ready");
         return;
       }
 
@@ -763,29 +940,39 @@
         document.getElementById("diff1").innerHTML = out1 || noDifferencesHTML();
         document.getElementById("diff2").innerHTML = out2 || noDifferencesHTML();
       }
+
+      setCompareLog("Done.");
+
+      if (manualRun) {
+        scrollToDifferences();
+      }
     }
 
-function clearAll() {
-	const text1 = document.getElementById("text1");
-	const text2 = document.getElementById("text2");
+	function clearAll() {
+		clearTimeout(compareTimer);
+		setManualCompareNeeded(false);
+		setCompareLog("Ready");
 
-	text1.value = "";
-	text2.value = "";
+		const text1 = document.getElementById("text1");
+		const text2 = document.getElementById("text2");
 
-	autoSizeTextarea(text1);
-	autoSizeTextarea(text2);
+		text1.value = "";
+		text2.value = "";
 
-	document.getElementById("diff1").innerHTML = noDifferencesHTML();
-	document.getElementById("diff2").innerHTML = noDifferencesHTML();
+		setCase('none', false);
 
-	setCase('none');
-}
+		autoSizeTextarea(text1);
+		autoSizeTextarea(text2);
+
+		document.getElementById("diff1").innerHTML = noDifferencesHTML();
+		document.getElementById("diff2").innerHTML = noDifferencesHTML();
+	}
 
   </script>
 
   </main>
 
-  <footer class="footer" data-footer-type="common" data-version="4.4.1.2026"></footer>
+  <footer class="footer" data-footer-type="common" data-version="4.4.2.2026"></footer>
 
   <script src="js/pulsecraft-footer.js"></script>
   <script src="js/pulsecraft-nav.js"></script>
