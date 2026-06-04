@@ -175,17 +175,25 @@
     }
 
     .case-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 20px;
+      row-gap: 10px;
       align-items: center;
       margin-bottom: 8px;
-      gap: 15px;
-      flex-wrap: wrap;
       width: 100%;
     }
     .case-row .case-label {
       font-weight: bold;
       margin-right: 3px;
       white-space: nowrap;
+    }
+    .left-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      min-width: 0;
     }
     .case-btn-group {
       display: flex;
@@ -230,18 +238,45 @@
     }
 
 
-    .floating-compare-btn {
+    .floating-compare-panel {
       position: fixed;
-      right: 22px;
-      bottom: 58px;
+      left: 50%;
+      bottom: 112px;
+      transform: translateX(-50%);
       z-index: 1100;
       display: none;
       align-items: center;
       justify-content: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 6px 16px var(--shadow);
     }
 
-    .floating-compare-btn.is-visible {
+    .floating-compare-panel.is-visible {
       display: inline-flex;
+    }
+
+    .floating-compare-status {
+      position: fixed;
+      left: 50%;
+      bottom: 112px;
+      transform: translateX(-50%);
+      z-index: 1101;
+      display: none;
+      width: auto;
+      min-width: 160px;
+      min-height: auto;
+      margin: 0;
+      padding: 10px 14px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .floating-compare-status.is-visible {
+      display: block;
     }
 
     /* Font +/- buttons and readout */
@@ -257,13 +292,40 @@
     }
 
     .right-controls {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 15px;
-      margin-left: auto;
+      min-width: 0;
     }
 
-    /* Reset button sits with Clean Text at far right of the case-row */
+    #manualCompareBtn {
+      grid-column: 2;
+      justify-self: center;
+    }
+
+    .right-controls .reset-btn {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    @media (max-width: 900px) {
+      .case-row {
+        grid-template-columns: 1fr;
+      }
+
+      .right-controls {
+        grid-template-columns: auto auto;
+        justify-content: end;
+      }
+
+      #manualCompareBtn,
+      .right-controls .reset-btn {
+        grid-column: auto;
+      }
+    }
+
+    /* Reset button sits at far right of the case-row */
     .reset-btn {
       background-color: #ccc !important;
       color: #111 !important;
@@ -447,29 +509,32 @@
 		</div>
 	</div>
 
-  <!-- CASE + FONT SIZE + RESET (single row) -->
-  <div class="case-row">
-    <span class="case-label">Case:</span>
-    <div class="case-btn-group">
-      <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">Default</button>
-      <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">abc</button>
-      <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">ABC</button>
-    </div>
-    <input type="hidden" id="caseOption" value="none" />
+  <!-- CLEAN TEXT + CASE + FONT SIZE + COMPARE + RESET (single row) -->
+  <div class="case-row" id="mainControlPanel">
+    <div class="left-controls">
+      <button type="button" class="case-btn toggle-active" id="cleanTextBtn" onclick="toggleCleanText()">Clean Text</button>
 
-    <span class="case-label" style="margin-left: 22px;">Font size:</span>
-    <div class="case-btn-group">
-      <button type="button" class="case-btn font-btn" onclick="adjustFont(-1)">–</button>
-      <button type="button" class="case-btn font-btn" onclick="adjustFont(1)">+</button>
-      <span class="font-readout" id="fontReadout">100%</span>
-    </div>
-    <input type="hidden" id="fontScale" value="1" />
+      <span class="case-label">Case:</span>
+      <div class="case-btn-group">
+        <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">Default</button>
+        <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">abc</button>
+        <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">ABC</button>
+      </div>
+      <input type="hidden" id="caseOption" value="none" />
 
-    <input type="hidden" id="collapseSpaces" value="true" />
+      <span class="case-label">Font size:</span>
+      <div class="case-btn-group">
+        <button type="button" class="case-btn font-btn" onclick="adjustFont(-1)">–</button>
+        <button type="button" class="case-btn font-btn" onclick="adjustFont(1)">+</button>
+        <span class="font-readout" id="fontReadout">100%</span>
+      </div>
+      <input type="hidden" id="fontScale" value="1" />
+
+      <input type="hidden" id="collapseSpaces" value="true" />
+    </div>
 
     <div class="right-controls">
       <button type="button" class="case-btn" id="manualCompareBtn" onclick="runManualCompare()">Compare</button>
-      <button type="button" class="case-btn toggle-active" id="cleanTextBtn" onclick="toggleCleanText()">Clean Text</button>
       <button type="button" class="reset-btn" onclick="clearAll()">Reset</button>
     </div>
   </div>
@@ -508,15 +573,21 @@
 
   <div id="compareLog" class="pc-log" aria-live="polite">Ready</div>
 
-  <button type="button" class="case-btn floating-compare-btn" id="floatingCompareBtn" onclick="runManualCompare()" aria-label="Compare large text">Compare</button>
+  <div class="floating-compare-panel" id="floatingComparePanel" aria-label="Large text controls">
+    <button type="button" class="case-btn" id="floatingCompareBtn" onclick="runManualCompare()" aria-label="Compare large text">Compare</button>
+    <button type="button" class="case-btn" id="floatingMenuBtn" onclick="scrollToControls()" aria-label="Return to main controls">Menu</button>
+  </div>
+
+  <div id="floatingCompareStatus" class="pc-log floating-compare-status" aria-live="polite">Comparing...</div>
 
 
   <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
   <script>
     const LIVE_COMPARE_LIMIT = 6000;
-    const LIVE_COMPARE_DELAY = 1000;
+    const LIVE_COMPARE_DELAY = 100;
     let compareTimer = null;
     let compareNeedsManualRun = false;
+    let compareIsRunning = false;
     let mainCompareButtonVisible = true;
 
     function getCombinedTextLength() {
@@ -553,15 +624,29 @@
     function setManualCompareNeeded(isNeeded) {
       compareNeedsManualRun = isNeeded;
       setCompareButtonPulse(isNeeded);
-      updateFloatingCompareButton();
+      updateFloatingCompareDisplay();
+    }
+
+    function setFloatingCompareStatus(isVisible) {
+      compareIsRunning = isVisible;
+      updateFloatingCompareDisplay();
     }
 
     function updateFloatingCompareButton() {
-      const floatingBtn = document.getElementById("floatingCompareBtn");
-      if (!floatingBtn) return;
+      updateFloatingCompareDisplay();
+    }
 
-      const shouldShow = compareNeedsManualRun && !mainCompareButtonVisible;
-      floatingBtn.classList.toggle("is-visible", shouldShow);
+    function updateFloatingCompareDisplay() {
+      const floatingPanel = document.getElementById("floatingComparePanel");
+      const floatingStatus = document.getElementById("floatingCompareStatus");
+
+      if (floatingPanel) {
+        floatingPanel.classList.toggle("is-visible", compareNeedsManualRun && !compareIsRunning);
+      }
+
+      if (floatingStatus) {
+        floatingStatus.classList.toggle("is-visible", compareIsRunning);
+      }
     }
 
     function updateMainCompareVisibility() {
@@ -607,6 +692,16 @@
       });
     }
 
+    function scrollToControls() {
+      const target = document.getElementById("mainControlPanel");
+      if (!target) return;
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
     function scheduleCompare() {
       clearTimeout(compareTimer);
 
@@ -632,9 +727,11 @@
       clearTimeout(compareTimer);
       setManualCompareNeeded(false);
       setCompareLog("Comparing...");
+      setFloatingCompareStatus(true);
 
       setTimeout(() => {
         runCompare(true);
+        setFloatingCompareStatus(false);
       }, 50);
     }
 
@@ -951,6 +1048,7 @@
 	function clearAll() {
 		clearTimeout(compareTimer);
 		setManualCompareNeeded(false);
+		setFloatingCompareStatus(false);
 		setCompareLog("Ready");
 
 		const text1 = document.getElementById("text1");
@@ -972,7 +1070,7 @@
 
   </main>
 
-  <footer class="footer" data-footer-type="common" data-version="4.4.2.2026"></footer>
+  <footer class="footer" data-footer-type="common" data-version="4.4.3.2026"></footer>
 
   <script src="js/pulsecraft-footer.js"></script>
   <script src="js/pulsecraft-nav.js"></script>
