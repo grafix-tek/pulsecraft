@@ -174,11 +174,33 @@
       font-size: 1.2em;
     }
 
+    .updating-msg {
+      background: #c62828;
+      color: #fff;
+      font-weight: bold;
+      padding: 10px 0;
+      display: block;
+      text-align: center;
+      border-radius: 5px;
+      font-size: 1.2em;
+    }
+
+    .waiting-msg {
+      background: #d97706;
+      color: #fff;
+      font-weight: bold;
+      padding: 10px 0;
+      display: block;
+      text-align: center;
+      border-radius: 5px;
+      font-size: 1.2em;
+    }
+
     .case-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      column-gap: 20px;
-      row-gap: 10px;
+      grid-template-columns: minmax(0, 3fr) minmax(220px, 1fr);
+      column-gap: 18px;
+      row-gap: 8px;
       align-items: center;
       margin-bottom: 8px;
       width: 100%;
@@ -191,18 +213,25 @@
     .left-controls {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       flex-wrap: wrap;
       min-width: 0;
     }
+    .control-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+      min-width: max-content;
+    }
     .case-btn-group {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       align-items: center;
     }
     .case-btn {
-      padding: 8px 26px;
-      font-size: 0.92em;
+      padding: 6px 21px;
+      font-size: 0.82em;
       border: 2px solid var(--case-btn-border);
       background: var(--case-btn-bg);
       color: var(--case-btn-fg);
@@ -281,9 +310,13 @@
 
     /* Font +/- buttons and readout */
     .font-btn {
-      padding: 8px 14px;
-      min-width: 52px;
+      padding: 6px 11px;
+      min-width: 42px;
       text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
     .font-readout {
       opacity: 0.9;
@@ -295,7 +328,7 @@
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 15px;
+      gap: 28px;
       min-width: 0;
     }
 
@@ -319,6 +352,10 @@
         justify-content: end;
       }
 
+      .control-cluster {
+        min-width: 0;
+      }
+
       #manualCompareBtn,
       .right-controls .reset-btn {
         grid-column: auto;
@@ -330,8 +367,8 @@
       background-color: #ccc !important;
       color: #111 !important;
       border: 2px solid #ccc !important;
-      padding: 8px 16px !important;
-      font-size: 0.9em !important;
+      padding: 6px 13px !important;
+      font-size: 0.82em !important;
       border-radius: 7px !important;
       font-weight: bold !important;
     }
@@ -348,8 +385,8 @@
       margin-bottom: 20px;
     }
     button {
-      padding: 10px 20px;
-      font-size: 1em;
+      padding: 8px 16px;
+      font-size: 0.9em;
       font-weight: bold;
       border-radius: 6px;
       border: none;
@@ -491,19 +528,19 @@
 
 	<div class="flex-row">
 		<div class="box">
-			<textarea id="text1" placeholder="Enter or paste first text here..."></textarea>
+			<textarea id="text1" tabindex="1" placeholder="Enter or paste first text here..."></textarea>
 
 			<label class="paste-option" title="Adds 3 blank lines before pasted text in this box">
-				<input type="checkbox" id="stackPaste1" />
+				<input type="checkbox" id="stackPaste1" tabindex="3" />
 				Stack3 Paste
 			</label>
 		</div>
 
 		<div class="box">
-			<textarea id="text2" placeholder="Enter or paste second text here..."></textarea>
+			<textarea id="text2" tabindex="2" placeholder="Enter or paste second text here..."></textarea>
 
 			<label class="paste-option" title="Adds 3 blank lines before pasted text in this box">
-				<input type="checkbox" id="stackPaste2" />
+				<input type="checkbox" id="stackPaste2" tabindex="4" />
 				Stack3 Paste
 			</label>
 		</div>
@@ -514,19 +551,23 @@
     <div class="left-controls">
       <button type="button" class="case-btn toggle-active" id="cleanTextBtn" onclick="toggleCleanText()">Clean Text</button>
 
-      <span class="case-label">Case:</span>
-      <div class="case-btn-group">
-        <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">Default</button>
-        <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">abc</button>
-        <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">ABC</button>
+      <div class="control-cluster">
+        <span class="case-label">Case:</span>
+        <div class="case-btn-group">
+          <button type="button" class="case-btn active" id="caseNone" onclick="setCase('none')">Default</button>
+          <button type="button" class="case-btn" id="caseLower" onclick="setCase('lower')">abc</button>
+          <button type="button" class="case-btn" id="caseUpper" onclick="setCase('upper')">ABC</button>
+        </div>
       </div>
       <input type="hidden" id="caseOption" value="none" />
 
-      <span class="case-label">Font size:</span>
-      <div class="case-btn-group">
-        <button type="button" class="case-btn font-btn" onclick="adjustFont(-1)">–</button>
-        <button type="button" class="case-btn font-btn" onclick="adjustFont(1)">+</button>
-        <span class="font-readout" id="fontReadout">100%</span>
+      <div class="control-cluster">
+        <span class="case-label">Font size:</span>
+        <div class="case-btn-group">
+          <button type="button" class="case-btn font-btn" onclick="adjustFont(-1)">–</button>
+          <button type="button" class="case-btn font-btn" onclick="adjustFont(1)">+</button>
+          <span class="font-readout" id="fontReadout">100%</span>
+        </div>
       </div>
       <input type="hidden" id="fontScale" value="1" />
 
@@ -584,7 +625,7 @@
   <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
   <script>
     const LIVE_COMPARE_LIMIT = 6000;
-    const LIVE_COMPARE_DELAY = 100;
+    const LIVE_COMPARE_DELAY = 1000;
     let compareTimer = null;
     let compareNeedsManualRun = false;
     let compareIsRunning = false;
@@ -707,6 +748,7 @@
 
       if (getCombinedTextLength() > LIVE_COMPARE_LIMIT) {
         if (bothSidesHaveText()) {
+          showWaitingForCompareState();
           setCompareLog("Large text detected — live compare paused. Click Compare.");
           setManualCompareNeeded(true);
         } else {
@@ -717,6 +759,14 @@
       }
 
       setManualCompareNeeded(false);
+
+      if (!document.getElementById("text1").value && !document.getElementById("text2").value) {
+        showNoDifferencesState();
+        setCompareLog("Ready");
+        return;
+      }
+
+      showUpdatingState();
 
       compareTimer = setTimeout(() => {
         runCompare(false);
@@ -863,6 +913,29 @@
       return `<i>${applyCaseToDisplayText("No differences")}</i>`;
     }
 
+    function updatingHTML() {
+      return `<span class="updating-msg">${applyCaseToDisplayText("Updating...")}</span>`;
+    }
+
+    function waitingForCompareHTML() {
+      return `<span class="waiting-msg">${applyCaseToDisplayText("Press Compare for results...")}</span>`;
+    }
+
+    function showNoDifferencesState() {
+      document.getElementById("diff1").innerHTML = noDifferencesHTML();
+      document.getElementById("diff2").innerHTML = noDifferencesHTML();
+    }
+
+    function showUpdatingState() {
+      document.getElementById("diff1").innerHTML = updatingHTML();
+      document.getElementById("diff2").innerHTML = updatingHTML();
+    }
+
+    function showWaitingForCompareState() {
+      document.getElementById("diff1").innerHTML = waitingForCompareHTML();
+      document.getElementById("diff2").innerHTML = waitingForCompareHTML();
+    }
+
     function updatePlaceholderText() {
       document.getElementById("text1").placeholder =
         applyCaseToDisplayText("Enter or paste first text here...");
@@ -987,8 +1060,7 @@
       const collapseSpaces = document.getElementById("collapseSpaces").value === "true";
 
       if (!t1 && !t2) {
-        document.getElementById("diff1").innerHTML = noDifferencesHTML();
-        document.getElementById("diff2").innerHTML = noDifferencesHTML();
+        showNoDifferencesState();
         setCompareLog("Ready");
         return;
       }
@@ -1062,15 +1134,14 @@
 		autoSizeTextarea(text1);
 		autoSizeTextarea(text2);
 
-		document.getElementById("diff1").innerHTML = noDifferencesHTML();
-		document.getElementById("diff2").innerHTML = noDifferencesHTML();
+		showNoDifferencesState();
 	}
 
   </script>
 
   </main>
 
-  <footer class="footer" data-footer-type="common" data-version="4.4.3.2026"></footer>
+  <footer class="footer" data-footer-type="common" data-version="4.4.4.2026"></footer>
 
   <script src="js/pulsecraft-footer.js"></script>
   <script src="js/pulsecraft-nav.js"></script>
