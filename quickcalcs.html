@@ -341,10 +341,12 @@
 		</header>
 
 		<nav class="tabs" aria-label="Converter categories">
-			<button class="tab-button active" type="button" data-tab="general">General</button>
+			<button class="tab-button active" type="button" data-tab="all">All</button>
+			<button class="tab-button" type="button" data-tab="general">General</button>
 			<button class="tab-button" type="button" data-tab="prepress">Prepress</button>
+			<!-- Construction tab temporarily disabled
 			<button class="tab-button" type="button" data-tab="construction">Construction</button>
-			<button class="tab-button" type="button" data-tab="all">All</button>
+			-->
 		</nav>
 
 		<div class="tool-grid">
@@ -680,6 +682,7 @@
 				</div>
 			</section>
 
+			<!-- Construction Helpers temporarily disabled
 			<section class="tool-card" data-tool="construction" data-categories="construction">
 				<div class="tool-heading">
 					<h2 class="tool-title">Construction Helpers</h2>
@@ -701,12 +704,13 @@
 					<input id="roofBundles" type="text" readonly />
 				</div>
 			</section>
+			-->
 
 		</div>
 
 	</main>
 
-	<footer class="footer" data-footer-type="common" data-version="1.0.1.2026"></footer>
+	<footer class="footer" data-footer-type="common" data-version="1.0.2.2026"></footer>
 
 	<script src="js/pulsecraft-footer.js"></script>
 	<script src="js/pulsecraft-nav.js"></script>
@@ -1257,7 +1261,8 @@
 		setupLinearConverter("networkSpeed", "networkSpeed", ["Mbps", "MB/s"]);
 		setupScale();
 		setupBleed();
-		setupRoofingPlaceholder();
+		// Construction Helpers temporarily disabled
+		// setupRoofingPlaceholder();
 	</script>
 </body>
 </html>
