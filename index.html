@@ -13,296 +13,687 @@
       --pgu: #5b6f8f;
       --ppr: #8a6374;
       --qc: #607895;
-      --card-width: 350px;
-      --card-gap: 28px;
+      --command-max: 1180px;
     }
 
     body {
       margin: 20px auto;
       max-width: 90%;
       min-height: 100vh;
-      padding-bottom: 34px;
+      padding-bottom: 54px;
     }
 
-    header {
-      text-align: center;
-      margin: 0 0 22px;
+    .command-shell {
+      width: 100%;
+      max-width: var(--command-max);
+      margin: 0 auto;
+      padding: 4px 0 42px;
+    }
+
+    .command-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .hero-panel,
+    .status-panel,
+    .tool-card,
+    .quick-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      min-height: 220px;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(96, 120, 149, 0.42), transparent 28%),
+        radial-gradient(circle at 86% 18%, rgba(25, 118, 210, 0.22), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), transparent 45%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.12);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px rgba(142, 232, 142, 0.55);
     }
 
     h1 {
       margin: 0;
-      font-size: 1.65em;
+      color: var(--fg);
+      font-size: clamp(2.0rem, 4vw, 3.25rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-subtitle {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.55;
+      max-width: 660px;
+    }
+
+    .open-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      text-decoration: none;
       font-weight: 800;
-      line-height: 1.1;
+      transition: transform 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .open-link {
+      background: var(--panel-alt);
+      opacity: 0.88;
+    }
+
+    .open-link:hover {
+      transform: translateY(-1px);
+      opacity: 1;
+      border-color: var(--accent);
+    }
+
+    .status-panel {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), transparent),
+        var(--panel);
+    }
+
+    .status-title {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      font-weight: 850;
       color: var(--fg);
     }
 
-    main {
-      width: 100%;
-      max-width: calc((var(--card-width) * 3) + (var(--card-gap) * 2));
-      margin: 0 auto;
-      padding: 8px 0 40px;
+    .status-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
     }
 
-    .utility-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(var(--card-width), var(--card-width)));
-      gap: var(--card-gap);
+    .clock-console {
+      margin-top: 2px;
+      min-height: 176px;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
+      gap: 10px;
+    }
+
+    .clock-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(142, 232, 142, 0.16);
+      padding-bottom: 8px;
+    }
+
+    .clock-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .clock-label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .clock-value {
+      color: var(--success);
+      font-size: 0.92rem;
+      font-weight: 850;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .clock-time {
+      font-size: 1.55rem;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .status-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .launch-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .launch-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel-alt);
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 800;
+      transition: transform 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .launch-link:hover,
+    .launch-link:focus {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .launch-link span:last-child {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel-alt);
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .status-value {
+      color: var(--fg);
+      font-size: 0.86rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 14px;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--fg);
+      font-size: 1.05rem;
+      line-height: 1.2;
+      font-weight: 875;
+    }
+
+    .section-kicker {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 22px;
     }
 
     .tool-card {
-      display: block;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      min-height: 230px;
       overflow: hidden;
       text-decoration: none;
       color: var(--fg);
-      box-shadow: 0 6px 16px var(--shadow);
       transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }
 
     .tool-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 22px var(--shadow);
-      border-color: #607895;
+      border-color: var(--accent);
     }
 
-    .preview {
-      height: 220px;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .preview iframe {
-      width: 138.9%;
-      height: 138.9%;
-      border: 0;
-      pointer-events: none;
-      transform: scale(0.72);
-      transform-origin: top left;
-    }
-
-    .tool-info {
+    .tool-top {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 16px;
+      gap: 13px;
+      padding: 16px 16px 12px;
       background: var(--panel-alt);
+      border-bottom: 1px solid var(--border);
     }
 
     .app-icon {
-      width: 58px;
-      height: 58px;
-      border-radius: 15px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
       color: #fff;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
-    .tc {
-      background: var(--tc);
-    }
-
-    .cc {
-      background: var(--cc);
-    }
-
-    .pgu {
-      background: var(--pgu);
-    }
-
-    .ppr {
-      background: var(--ppr);
-    }
-
-    .qc {
-      background: var(--qc);
-    }
+    .tc { background: var(--tc); }
+    .cc { background: var(--cc); }
+    .pgu { background: var(--pgu); }
+    .ppr { background: var(--ppr); }
+    .qc { background: var(--qc); }
 
     .tool-title {
       margin: 0;
-      font-size: 1.15em;
-      font-weight: 800;
       color: var(--fg);
+      font-size: 1.02rem;
+      line-height: 1.15;
+      font-weight: 875;
+    }
+
+    .tool-type {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .tool-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 15px 16px 16px;
     }
 
     .tool-desc {
-      margin: 5px 0 0;
+      margin: 0;
       color: var(--muted);
-      font-size: 0.9em;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .tool-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(0,0,0,0.10);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tool-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: auto;
+      padding-top: 18px;
+    }
+
+    .open-link {
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 0.86rem;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .quick-panel {
+      padding: 18px;
+    }
+
+    .utility-summary-title {
+      margin: 0 0 12px;
+      color: var(--fg);
+      font-size: 1rem;
+      font-weight: 875;
+    }
+
+    .utility-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .utility-summary-item {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel-alt);
+    }
+
+    .utility-summary-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--fg);
+      font-size: 0.9rem;
+    }
+
+    .utility-summary-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
       line-height: 1.35;
     }
 
-    /* 
-      Icon-only layout.
-      This kicks in only at phone-sized widths.
-    */
-    @media (max-width: 600px) {
+    @media (max-width: 980px) {
+      .command-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
       body {
-        margin: 20px auto;
         max-width: 92%;
       }
 
-      header {
-        margin-bottom: 26px;
+      .hero-panel {
+        padding: 22px;
       }
 
-      h1 {
-        font-size: 1.45em;
-      }
-
-      main {
-        padding-top: 0;
-      }
-
-      .utility-grid {
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
-        gap: 22px 16px;
-        max-width: 420px;
-        margin: 0 auto;
-      }
-
-      .tool-card {
-        background: transparent;
-        border: 0;
-        box-shadow: none;
-        border-radius: 0;
-        text-align: center;
-      }
-
-      .tool-card:hover {
-        transform: none;
-        box-shadow: none;
-        border-color: transparent;
-      }
-
-      .preview {
-        display: none;
-      }
-
-      .tool-info {
+      .section-head {
         display: block;
-        padding: 0;
-        background: transparent;
       }
 
-      .app-icon {
-        width: 74px;
-        height: 74px;
-        border-radius: 19px;
-        margin: 0 auto 9px;
-        font-size: 24px;
-      }
-
-      .tool-title {
-        font-size: 0.9em;
-        line-height: 1.2;
-      }
-
-      .tool-desc {
-        display: none;
-      }
-
-    }
-
-    @media (max-width: 360px) {
-      .utility-grid {
+      .tool-grid {
         grid-template-columns: 1fr;
-        max-width: 220px;
+      }
+
+      .utility-summary-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>PulseCraft Utilities</h1>
-  </header>
-
-  <main>
-    <div class="utility-grid">
-
-      <a class="tool-card" href="collator_calculator.html">
-        <div class="preview">
-          <iframe src="collator_calculator.html" title="Collator Calculator preview"></iframe>
+  <main class="command-shell">
+    <section class="command-hero" aria-label="PulseCraft command center">
+      <div class="hero-panel">
+        <div class="hero-content">
+          <p class="eyebrow">Suite Online</p>
+          <h1>PulseCraft Utilities</h1>
+          <p class="hero-subtitle">
+            A handy set of browser-based tools for every day use in prepress.<br>Enjoy them and put them to good use!
+          </p>
         </div>
-        <div class="tool-info">
-          <div class="app-icon cc">CC</div>
-          <div>
-            <h2 class="tool-title">Collator Calculator</h2>
+      </div>
+
+      <aside class="status-panel" aria-label="Local date and time">
+        <div>
+          <h2 class="status-title">Local Date &amp; Time</h2>
+          <p class="status-note" id="localGreeting">Loading greeting...</p>
+        </div>
+
+        <div class="pc-log clock-console" aria-live="polite">
+          <div class="clock-line">
+            <span class="clock-label">Time</span>
+            <span class="clock-value clock-time" id="localTime">--:--:--</span>
+          </div>
+          <div class="clock-line">
+            <span class="clock-label">Date</span>
+            <span class="clock-value" id="localDate">Loading...</span>
+          </div>
+          <div class="clock-line">
+            <span class="clock-label">Day</span>
+            <span class="clock-value" id="localDay">Loading...</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section aria-label="Utility tools">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Available tools</h2>
+          <p class="section-kicker">Choose a utility below.</p>
+        </div>
+      </div>
+
+      <div class="tool-grid">
+        <a class="tool-card" href="text_compare.html">
+          <div class="tool-top">
+            <div class="app-icon tc">TC</div>
+            <div>
+              <h3 class="tool-title">Text Compare</h3>
+              <p class="tool-type">Text utility</p>
+            </div>
+          </div>
+          <div class="tool-body">
+            <p class="tool-desc">Compare two blocks of text and review character-level differences quickly.</p>
+            <div class="tool-meta">
+              <span class="tag">Large text aware</span>
+              <span class="tag">Visual diff</span>
+            </div>
+            <div class="tool-footer">
+              <span class="open-link">Open tool</span>
+              <span class="arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="tool-card" href="pdf_geometry_updater.html">
+          <div class="tool-top">
+            <div class="app-icon pgu">PGU</div>
+            <div>
+              <h3 class="tool-title">PDF Geometry Updater</h3>
+              <p class="tool-type">PDF utility</p>
+            </div>
+          </div>
+          <div class="tool-body">
+            <p class="tool-desc">Inspect and adjust PDF TrimBox geometry using custom inset values.</p>
+            <div class="tool-meta">
+              <span class="tag">Geometry</span>
+              <span class="tag">PDF boxes</span>
+            </div>
+            <div class="tool-footer">
+              <span class="open-link">Open tool</span>
+              <span class="arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="tool-card" href="pdf_page_remover.html">
+          <div class="tool-top">
+            <div class="app-icon ppr">PPR</div>
+            <div>
+              <h3 class="tool-title">PDF Page Remover</h3>
+              <p class="tool-type">PDF utility</p>
+            </div>
+          </div>
+          <div class="tool-body">
+            <p class="tool-desc">Remove even, odd, or recurring PDF pages and download the cleaned result.</p>
+            <div class="tool-meta">
+              <span class="tag">Page cleanup</span>
+              <span class="tag">PDF export</span>
+            </div>
+            <div class="tool-footer">
+              <span class="open-link">Open tool</span>
+              <span class="arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="tool-card" href="collator_calculator.html">
+          <div class="tool-top">
+            <div class="app-icon cc">CC</div>
+            <div>
+              <h3 class="tool-title">Collator Calculator</h3>
+              <p class="tool-type">Production calculator</p>
+            </div>
+          </div>
+          <div class="tool-body">
             <p class="tool-desc">Calculate and visualize collator numbers from UPC input.</p>
+            <div class="tool-meta">
+              <span class="tag">UPC</span>
+              <span class="tag">Collation</span>
+            </div>
+            <div class="tool-footer">
+              <span class="open-link">Open tool</span>
+              <span class="arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a class="tool-card" href="pdf_geometry_updater.html">
-        <div class="preview">
-          <iframe src="pdf_geometry_updater.html" title="PDF Geometry Updater preview"></iframe>
-        </div>
-        <div class="tool-info">
-          <div class="app-icon pgu">PGU</div>
-          <div>
-            <h2 class="tool-title">PDF Geometry Updater</h2>
-            <p class="tool-desc">Adjust PDF TrimBox geometry with custom inset values.</p>
+        <a class="tool-card" href="quickcalcs.html">
+          <div class="tool-top">
+            <div class="app-icon qc">QC</div>
+            <div>
+              <h3 class="tool-title">QuickCalcs</h3>
+              <p class="tool-type">Quick calculator</p>
+            </div>
           </div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="pdf_page_remover.html">
-        <div class="preview">
-          <iframe src="pdf_page_remover.html" title="PDF Page Remover preview"></iframe>
-        </div>
-        <div class="tool-info">
-          <div class="app-icon ppr">PPR</div>
-          <div>
-            <h2 class="tool-title">PDF Page Remover</h2>
-            <p class="tool-desc">Remove even, odd, or recurring PDF pages and download the result.</p>
-          </div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="quickcalcs.html">
-        <div class="preview">
-          <iframe src="quickcalcs.html" title="QuickCalcs preview"></iframe>
-        </div>
-        <div class="tool-info">
-          <div class="app-icon qc">QC</div>
-          <div>
-            <h2 class="tool-title">QuickCalcs</h2>
+          <div class="tool-body">
             <p class="tool-desc">Quick unit conversions, mini calculators, and everyday math helpers.</p>
+            <div class="tool-meta">
+              <span class="tag">Fast math</span>
+              <span class="tag">Helpers</span>
+            </div>
+            <div class="tool-footer">
+              <span class="open-link">Open tool</span>
+              <span class="arrow">→</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
+    </section>
 
-      <a class="tool-card" href="text_compare.html">
-        <div class="preview">
-          <iframe src="text_compare.html" title="Text Compare preview"></iframe>
-        </div>
-        <div class="tool-info">
-          <div class="app-icon tc">TC</div>
-          <div>
-            <h2 class="tool-title">Text Compare</h2>
-            <p class="tool-desc">Compare two blocks of text and review differences quickly.</p>
-          </div>
-        </div>
-      </a>
-
-    </div>
   </main>
 
   <footer class="footer" data-footer-type="index"></footer>
 
-  <script src="js/pulsecraft-footer.js"></script>
+  <script>
+    function getLocalGreeting(now) {
+      const hour = now.getHours();
 
+      if (hour >= 6 && hour < 7) return "Starting early today?";
+      if (hour >= 7 && hour < 12) return "Good morning";
+      if (hour >= 12 && hour < 17) return "Good afternoon";
+      if (hour >= 17 && hour < 22) return "Good evening";
+      return "What are you doing working right now?";
+    }
+
+    function updateLocalClock() {
+      const now = new Date();
+      const timeEl = document.getElementById("localTime");
+      const dateEl = document.getElementById("localDate");
+      const dayEl = document.getElementById("localDay");
+      const greetingEl = document.getElementById("localGreeting");
+
+      if (!timeEl || !dateEl || !dayEl || !greetingEl) return;
+
+      greetingEl.textContent = getLocalGreeting(now);
+
+      timeEl.textContent = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+
+      dateEl.textContent = now.toLocaleDateString([], {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+
+      dayEl.textContent = now.toLocaleDateString([], {
+        weekday: "long"
+      });
+    }
+
+    updateLocalClock();
+    setInterval(updateLocalClock, 1000);
+  </script>
+
+  <script src="js/pulsecraft-footer.js"></script>
 </body>
 </html>
