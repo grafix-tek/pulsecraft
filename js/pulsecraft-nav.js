@@ -7,11 +7,11 @@
 	};
 
 	const tools = [
-		{ label: "Collator Calculator", href: "collator_calculator.html" },
-		{ label: "PDF Geometry Updater", href: "pdf_geometry_updater.html" },
-		{ label: "PDF Page Remover", href: "pdf_page_remover.html" },
-		{ label: "QuickCalcs", href: "quickcalcs.html" },
-		{ label: "Text Compare", href: "text_compare.html" }
+		{ label: "Collator Calculator", href: "collator_calculator.html", icon: "CC", color: "#b88a36" },
+		{ label: "PDF Geometry Updater", href: "pdf_geometry_updater.html", icon: "PGU", color: "#5b6f8f" },
+		{ label: "PDF Page Remover", href: "pdf_page_remover.html", icon: "PPR", color: "#8a6374" },
+		{ label: "QuickCalcs", href: "quickcalcs.html", icon: "QC", color: "#607895" },
+		{ label: "Text Compare", href: "text_compare.html", icon: "TC", color: "#1976d2" }
 	];
 
 	function getCurrentFileName() {
@@ -24,11 +24,50 @@
 		return getCurrentFileName().toLowerCase() === href.toLowerCase();
 	}
 
+	function applyDrawerLinkLayout(link) {
+		link.style.display = "flex";
+		link.style.flexDirection = "column";
+		link.style.alignItems = "flex-start";
+		link.style.gap = "7px";
+	}
+
+	function makeIndexStyleIcon(item) {
+		const icon = document.createElement("span");
+		icon.textContent = item.icon;
+		icon.setAttribute("aria-hidden", "true");
+
+		/* Matches the index-page app icon style, scaled for the drawer. */
+		icon.style.width = "44px";
+		icon.style.height = "44px";
+		icon.style.borderRadius = "12px";
+		icon.style.display = "inline-flex";
+		icon.style.alignItems = "center";
+		icon.style.justifyContent = "center";
+		icon.style.flex = "0 0 auto";
+		icon.style.background = item.color;
+		icon.style.color = "#fff";
+		icon.style.fontSize = item.icon.length > 2 ? "13px" : "15px";
+		icon.style.fontWeight = "900";
+		icon.style.letterSpacing = "0.8px";
+		icon.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.25)";
+		icon.style.border = "1px solid rgba(255, 255, 255, 0.18)";
+
+		return icon;
+	}
+
 	function makeLink(item) {
 		const link = document.createElement("a");
 		link.className = "pc-nav-link";
 		link.href = item.href;
-		link.textContent = item.label;
+
+		if (item.icon) {
+			applyDrawerLinkLayout(link);
+			link.appendChild(makeIndexStyleIcon(item));
+		}
+
+		const label = document.createElement("span");
+		label.textContent = item.label;
+		link.appendChild(label);
 
 		if (isCurrentPage(item.href)) {
 			link.classList.add("pc-nav-active");
