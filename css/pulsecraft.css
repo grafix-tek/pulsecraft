@@ -87,6 +87,9 @@ body {
 
    Injected by js/pulsecraft-nav.js.
    Provides a left-edge hamburger menu for jumping between tools.
+
+   Drawer-specific colors are defined on .pc-nav-drawer so page-level
+   variables such as --accent cannot accidentally change drawer highlighting.
    ========================================================= */
 
 .pc-nav-toggle {
@@ -136,6 +139,10 @@ body {
 }
 
 .pc-nav-drawer {
+	--pc-nav-active-bg: #607895;
+	--pc-nav-active-border: #7f94ad;
+	--pc-nav-hover-bg: var(--panel-alt);
+
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -151,6 +158,7 @@ body {
 	padding: 18px;
 	box-sizing: border-box;
 }
+
 body.pc-nav-open .pc-nav-overlay {
 	opacity: 1;
 	pointer-events: auto;
@@ -163,8 +171,6 @@ body.pc-nav-open .pc-nav-drawer {
 body.pc-nav-open .pc-nav-toggle {
 	display: none;
 }
-
-
 
 .pc-nav-title {
 	margin: 0 0 14px;
@@ -193,18 +199,51 @@ body.pc-nav-open .pc-nav-toggle {
 	opacity: 0.82;
 }
 
+.pc-nav-tool-link {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 11px 12px 13px;
+}
+
+.pc-nav-app-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 14px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	color: #fff;
+	font-size: 17px;
+	font-weight: 900;
+	letter-spacing: 0.8px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pc-nav-app-icon-long {
+	font-size: 13px;
+}
+
+.pc-nav-label {
+	display: block;
+	line-height: 1.2;
+}
+
 .pc-nav-link:hover,
 .pc-nav-link:focus {
 	opacity: 1;
-	background: var(--panel-alt);
+	background: var(--pc-nav-hover-bg);
 	border-color: var(--border);
 	outline: none;
 }
 
-.pc-nav-link.pc-nav-active {
-	background: var(--accent);
+.pc-nav-drawer .pc-nav-link.pc-nav-active {
+	background: var(--pc-nav-active-bg);
 	color: var(--fg);
-	border-color: var(--accent);
+	border-color: var(--pc-nav-active-border);
 	opacity: 1;
 	box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.26);
 }
@@ -223,7 +262,6 @@ body.pc-nav-open .pc-nav-toggle {
 		display: none !important;
 	}
 }
-
 
 /* =========================================================
    PulseCraft shared log / console readout
