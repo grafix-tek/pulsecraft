@@ -202,7 +202,8 @@
   th:nth-child(3),td:nth-child(3){width:clamp(54px, 7vw, 74px)}
 
   tbody td:nth-child(2){border-left:4px solid #000;border-right:4px solid #000}
-  tbody tr:not(.spacer-row) td:nth-child(2){display:flex;align-items:center;justify-content:center}
+  /* Keep this as a true table cell. Using flex here can make the thick collator-bar border render broken/dashed at short viewport heights. */
+  tbody tr:not(.spacer-row) td:nth-child(2){text-align:center;vertical-align:middle}
   tbody tr:first-child td:nth-child(2){border-top:4px solid #000}
   tbody tr:last-child td:nth-child(2){border-bottom:4px solid #000}
   th,td{border-right:1px solid #000}
@@ -454,7 +455,7 @@ window.addEventListener('load',()=>{
 });
 </script>
 
-<footer class="footer" data-footer-type="collator" data-version="4.0.1.2026"></footer>
+<footer class="footer" data-footer-type="collator" data-version="4.0.3.2026"></footer>
 
 <script src="js/pulsecraft-footer.js"></script>
 <script src="js/pulsecraft-nav.js"></script>
